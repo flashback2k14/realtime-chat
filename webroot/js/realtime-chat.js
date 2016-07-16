@@ -68,6 +68,16 @@ window.addEventListener("DOMContentLoaded", function() {
 		var chatName = txtChatName.value;
 		var chatMessage = txtChatMessage.value;
 		
+		if (chatName.length <= 0) {
+			pErrorMessage.innerHTML += "Empty Chat Name is invalid! <br/>";
+			return;
+		}
+		
+		if (chatMessage.length <= 0) {
+			pErrorMessage.value += "Empty Chat Message is invalid! <br/>";
+			return;
+		}
+		
 		var xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState === 4) {

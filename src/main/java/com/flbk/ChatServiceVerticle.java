@@ -35,7 +35,7 @@ public class ChatServiceVerticle extends AbstractVerticle {
 		vertx
 			.createHttpServer()
 			.requestHandler(router::accept)
-			.listen(7070, result -> {
+			.listen(config().getInteger("http.port", 7070), result -> {
 				if (result.succeeded()) {
 					startFuture.complete();
 				} else {

@@ -1,5 +1,61 @@
 body {
+	font-family: 'Roboto Slab', serif;
 	margin: 20px;
-	background: lightgrey;
-	color: black;
+  background: #424242;
+  color: white;
+}
+
+.app {
+	display: flex;
+	flex-direction: column;
+}
+
+.app__head {
+	display: flex;
+	flex-direction: row;
+	margin-bottom: 20px;
+}
+
+.app__head--label {
+	width: 10%;
+}
+
+.app__head--input {
+	width: 50%;
+}
+
+.app__button {
+	display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.btn {
+	width: 250px;
+	height: 30px;
+}
+
+.btn--color {
+	background: #00B8D4;
+	color: white;
+}
+
+.app__history {
+	display: flex;
+  flex-direction: row;
+  justify-content: center;
+  height: 200px;
+  overflow: auto;
+}
+
+.app__error {
+	display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 200px;
+  overflow: auto;
+}
+
+.app__error--text {
+	 color: #D32F2F;
 }
