@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Vert.X Chat</title>
+    <link rel="stylesheet" href="./style/base.css">
+  </head>
+  <body>
+    <h1>Realtime Chat built with Vert.X and SockJS</h1>
+    
+    <label for="txtChatId">Chat ID:</label>
+    <input id="txtChatId" type="text" value="1" readonly>
+    
+    <label for="txtChatName">Chat Name:</label>
+    <input id="txtChatName" type="text">
+    
+    <label for="txtChatMessage">Chat Message:</label>
+    <input id="txtChatMessage" type="text">
+    
+    <button id="btnSend">Send</button>
+    
+    <h3>Chat History</h3>
+    <ul id="ulChatHistory"></ul>
+    
+    <p id="pErrorMessage"></p>
+    
+    <!-- scripts -->
+    <script src="//cdn.jsdelivr.net/sockjs/1/sockjs.min.js"></script>
+    <script src="./js/libs/vertx-eventbus.js"></script>
+    <script src="./js/realtime-chat.js"></script>
+  </body>
+</html> 
