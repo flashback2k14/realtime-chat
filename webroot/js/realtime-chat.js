@@ -1,6 +1,6 @@
 window.addEventListener("DOMContentLoaded", function() {
 	// Base URL
-	var BASEURL = "https://vertx-realtime-chat.herokuapp.com"; //"http://localhost:7070";
+	var BASEURL = window.location.hostname.indexOf("herokuapp") > 0 ? "https://vertx-realtime-chat.herokuapp.com" : "http://localhost:7070";
 	// UI Elements
 	var txtChatId = document.querySelector("#txtChatId");
 	var txtChatName = document.querySelector("#txtChatName");
@@ -8,6 +8,16 @@ window.addEventListener("DOMContentLoaded", function() {
 	var ulChatHistory = document.querySelector("#ulChatHistory");
 	var pErrorMessage = document.querySelector("#pErrorMessage");
 	var btnSend = document.querySelector("#btnSend");
+	
+	/**
+	 * Clear Error Message
+	 * @returns
+	 */
+	function _clearErrorMessage() {
+		setTimeout(function() {
+			pErrorMessage.textContent = "";
+	      }, 5000);
+	};
 	
 	/**
 	 * Create List Item for Chat History
@@ -50,7 +60,8 @@ window.addEventListener("DOMContentLoaded", function() {
 		eventBus.onopen = function() {
 			eventBus.registerHandler("chat." + txtChatId.value, function(error, message) {
 				if (error) {
-					pErrorMessage.innerHTML += "Error: " + error.message + "\n";
+					pErrorMessage.innerHTML += "Error: " + error.message + "<br/>";
+					_clearErrorMessage();
 					return;
 				}
 				_createListItem(
@@ -70,11 +81,13 @@ window.addEventListener("DOMContentLoaded", function() {
 		
 		if (chatName.length <= 0) {
 			pErrorMessage.innerHTML += "Empty Chat Name is invalid! <br/>";
+			_clearErrorMessage();
 			return;
 		}
 		
 		if (chatMessage.length <= 0) {
 			pErrorMessage.value += "Empty Chat Message is invalid! <br/>";
+			_clearErrorMessage();
 			return;
 		}
 		
@@ -82,7 +95,8 @@ window.addEventListener("DOMContentLoaded", function() {
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState === 4) {
 				if (!xhr.status === 200) {
-					pErrorMessage.innerHTML = "Invalid Chat Message!";
+					pErrorMessage.innerHTML += "Invalid Chat Message! <br/>";
+					_clearErrorMessage();
 				} else {
 					txtChatMessage.value = "";
 				}
