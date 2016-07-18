@@ -42,6 +42,7 @@ shadowJar {
 }
 
 task stage {
+  dependsOn build  
   dependsOn run
 }
 
