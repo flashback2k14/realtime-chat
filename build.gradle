@@ -41,6 +41,10 @@ shadowJar {
     }
 }
 
+task stage {
+  dependsOn run
+}
+
 task wrapper(type: Wrapper) {
     gradleVersion = '2.14'
 }
