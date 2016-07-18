@@ -17,3 +17,6 @@ built with Vert.x 3 and SockJS
 - available under
   - DEV: localhost:7070
   - PROD: [https://vertx-realtime-chat.herokuapp.com/](https://vertx-realtime-chat.herokuapp.com/)
+
+
+inspired by [http://vertx.io/blog/real-time-bidding-with-websockets-and-vert-x/](http://vertx.io/blog/real-time-bidding-with-websockets-and-vert-x/)
