@@ -1,1 +1,1 @@
-web: java -jar -Dport=$PORT build/libs/VertxSocketChat-fat.jar
+web: java -jar -Dport=$PORT $JAVA_OPTS build/libs/VertxSocketChat-fat.jar
