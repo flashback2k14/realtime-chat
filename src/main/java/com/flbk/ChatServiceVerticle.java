@@ -30,12 +30,12 @@ public class ChatServiceVerticle extends AbstractVerticle {
 		router.route().failureHandler(errorHandler());
 		// serve frontend
 		router.route().handler(staticHandler());
-		
+				
 		// create server
 		vertx
 			.createHttpServer()
 			.requestHandler(router::accept)
-			.listen(config().getInteger("http.port", 7070), result -> {
+			.listen(Integer.getInteger("port", 7070), result -> {
 				if (result.succeeded()) {
 					startFuture.complete();
 				} else {
