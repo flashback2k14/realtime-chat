@@ -1,6 +1,6 @@
 window.addEventListener("DOMContentLoaded", function() {
 	// Base URL
-	var BASEURL = "http://localhost:7070";
+	var BASEURL = "https://vertx-realtime-chat.herokuapp.com"; //"http://localhost:7070";
 	// UI Elements
 	var txtChatId = document.querySelector("#txtChatId");
 	var txtChatName = document.querySelector("#txtChatName");
