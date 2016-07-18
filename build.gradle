@@ -41,8 +41,6 @@ shadowJar {
     }
 }
 
-build.finalizedBy(run)
-
 task stage {
     dependsOn build
 }
