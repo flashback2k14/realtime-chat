@@ -18,6 +18,7 @@ dependencies {
 
 def mainVerticle = "com.flbk.ChatServiceVerticle"
 mainClassName = "io.vertx.core.Starter"
+
 run {
     args = ["run", mainVerticle]
 }
@@ -38,6 +39,10 @@ shadowJar {
     into 'webroot', {
         from 'webroot'
     }
+}
+
+task stage {
+  dependsOn build
 }
 
 task wrapper(type: Wrapper) {
