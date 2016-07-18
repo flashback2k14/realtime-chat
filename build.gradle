@@ -43,6 +43,7 @@ shadowJar {
 
 task stage {
     dependsOn build
+    dependsOn shadowJar
 }
 
 task wrapper(type: Wrapper) {
