@@ -41,9 +41,10 @@ shadowJar {
     }
 }
 
+build.finalizedBy(run)
+
 task stage {
-  dependsOn build  
-  dependsOn run
+    dependsOn build
 }
 
 task wrapper(type: Wrapper) {
