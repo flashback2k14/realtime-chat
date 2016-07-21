@@ -1,5 +1,17 @@
 {
 	"_id": "5789f5657de0643782b93490",
 	"chatId": "TestChat",
-	"chatDesc": "Test Chat Description"
+	"chatDesc": "Test Chat Description",
+	"messages": [
+		{
+			"mid":"1D2DDSF4543",
+			"author":"John Doe",
+			"content":"Hi folks!"
+		},
+		{
+			"mid":"1Df4DSF4543",
+			"author":"John Doe",
+			"content":"Hi folks!"
+		}
+	]
 }

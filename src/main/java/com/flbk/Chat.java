@@ -1,5 +1,9 @@
 package com.flbk;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 public class Chat {
@@ -7,6 +11,7 @@ public class Chat {
 	private String id;
 	private String chatId;
 	private String chatDesc;
+	private List<Message> messages = new ArrayList<>();
 	
 	public Chat(){}
 	
@@ -29,17 +34,27 @@ public class Chat {
 		this.id = json.getString("_id");
 		this.chatId = json.getString("chatId");
 		this.chatDesc = json.getString("chatDesc");
+		JsonArray msgs = json.getJsonArray("messages");
+		msgs.forEach(msg -> {
+			this.addMessage(new Message((JsonObject)msg));
+		});
 	}
 	
 	public JsonObject toJson(){
 		JsonObject j = new JsonObject()
 				.put("chatId", this.chatId)
-				.put("chatDesc", this.chatDesc);
+				.put("chatDesc", this.chatDesc)
+				.put("messages", new JsonArray(messages));
 		if(this.id != null && !this.id.isEmpty()){
 			System.out.println("ID NOT EMPTY");
 			j.put("_id", this.id);
 		}
+		
 		return j;
+	}
+	
+	public void addMessage(Message msg){
+		this.messages.add(msg);
 	}
 	
 	public void resetDbId(){
