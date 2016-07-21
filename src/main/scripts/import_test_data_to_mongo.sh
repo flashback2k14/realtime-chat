@@ -1,0 +1,1 @@
+mongoimport --db chats --collection chats --drop --file ./fake_chats.json

@@ -1,7 +1,10 @@
 package com.flbk;
 
+
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.Router;
@@ -61,7 +64,12 @@ public class ChatServiceVerticle extends AbstractVerticle {
 	}
 	
 	private Router chatApiRouter() {
-		ChatRepository repository = new ChatRepository(vertx.sharedData());
+		JsonObject dbConf = new JsonObject()
+    			.put("db_name", "chats")
+    			.put("connection_string", "mongodb://localhost:27017");
+		DeploymentOptions opts = new DeploymentOptions().setConfig(dbConf);
+		
+		ChatRepository repository = new ChatRepository(vertx.sharedData(), vertx, dbConf);
 		ChatHandler chatHandler = new ChatHandler(repository);
 		
 		Router router = Router.router(vertx);
@@ -70,9 +78,10 @@ public class ChatServiceVerticle extends AbstractVerticle {
 		router.route().consumes("application/json");
 		router.route().produces("application/json");
 		
-		router.route("/chats/:id").handler(chatHandler::initChatInSharedData);
+//		router.route("/chats/:id").handler(chatHandler::initChatInSharedData);
 		router.get("/chats/:id").handler(chatHandler::handleGetChat);
-		router.patch("/chats/:id").handler(chatHandler::handleChangedChatMessage);
+//		router.patch("/chats/:id").handler(chatHandler::handleChangedChatMessage);
+		router.post("/chats").handler(chatHandler::handleAddChat);
 		
 		return router;
 	}
