@@ -80,8 +80,9 @@ public class ChatServiceVerticle extends AbstractVerticle {
 		
 //		router.route("/chats/:id").handler(chatHandler::initChatInSharedData);
 		router.get("/chats/:id").handler(chatHandler::handleGetChat);
-//		router.patch("/chats/:id").handler(chatHandler::handleChangedChatMessage);
+		router.post("/chats/:id/messages").handler(chatHandler::handleChangedChatMessage);
 		router.post("/chats").handler(chatHandler::handleAddChat);
+		router.get("/chats").handler(chatHandler::handleGetAllChats);
 		
 		return router;
 	}

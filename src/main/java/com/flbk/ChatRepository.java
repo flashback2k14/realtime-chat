@@ -2,6 +2,7 @@ package com.flbk;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
@@ -23,6 +24,21 @@ public class ChatRepository {
 	public ChatRepository(SharedData sharedData, Vertx vertx, JsonObject dbConfig) {
 		this.mongo = MongoClient.createShared(vertx, dbConfig);
 		this.sharedData = sharedData;
+	}
+	
+	public void getAllChats(Handler<AsyncResult<List<Chat>>> handler){
+		System.out.println("GET ALL CHATS");
+		mongo.find(COLLECTION, new JsonObject(), ar -> {
+			if(ar.succeeded()){
+				List<JsonObject> json = ar.result();
+				List<Chat> chats = json.stream().map(j -> {
+					return new Chat(j.getString("_id"), j.getString("chatId"), j.getString("chatDesc"));
+				}).collect(Collectors.toList());
+				handler.handle(Future.succeededFuture(chats));
+			}else{
+				handler.handle(Future.failedFuture(ar.cause()));
+			}
+		});
 	}
 	
 	public void getById(String chatId, Handler<AsyncResult<Chat>> handler){
@@ -64,6 +80,25 @@ public class ChatRepository {
 			}
 		});
 	}
+	
+	public void saveMessage(String chatId, Message msg, Handler<AsyncResult<Message>> handler){
+		System.out.println("SAVE MESSAGE");
+		
+		JsonObject query = new JsonObject().put("chatId", chatId);
+		JsonObject update = new JsonObject().put(
+				"$push",
+				new JsonObject()
+				.put("messages", msg.toJson()));
+		
+		mongo.update(COLLECTION, query, update, ar -> {
+			if(ar.succeeded()){
+				handler.handle(Future.succeededFuture(msg));
+			}else{
+				handler.handle(Future.failedFuture(ar.cause().getMessage()));
+			}
+		});
+	}
+	
 	
 	public void save(Chat chat) {
 		LocalMap<String, String> chatSharedData = this.sharedData.getLocalMap(chat.getChatId());

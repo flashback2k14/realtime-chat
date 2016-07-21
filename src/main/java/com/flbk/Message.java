@@ -26,6 +26,13 @@ public class Message {
 		this.content = json.getString("content");
 	}
 	
+	public JsonObject toJson(){
+		return new JsonObject()
+				.put("mid", mid)
+				.put("author", author)
+				.put("content", content);
+	}
+	
 	public String getMid() {
 		return mid;
 	}

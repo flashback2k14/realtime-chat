@@ -15,9 +15,10 @@ public class Chat {
 	
 	public Chat(){}
 	
-	public Chat(String id, String name, String message) {
-		this.chatId = id;
-		this.chatDesc = name;
+	public Chat(String id, String chatId, String chatDesc) {
+		this.id = id;
+		this.chatId = chatId;
+		this.chatDesc = chatDesc;
 	}
 	
 	public Chat(String id, String name) {
@@ -73,10 +74,6 @@ public class Chat {
 		return chatId;
 	}
 
-	public void setChatId(String chatId) {
-		this.chatId = chatId;
-	}
-
 	public String getChatDesc() {
 		return chatDesc;
 	}
@@ -88,5 +85,26 @@ public class Chat {
 	@Override
 	public String toString() {
 		return "Chat [id=" + chatId + ", description=" + chatDesc + "]";
+	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((chatId == null) ? 0 : chatId.hashCode());
+		return result;
+	}
+	
+	@Override
+	public boolean equals(Object o){
+		if(o == this){
+			return true;
+		}
+		if(!(o instanceof Chat)){
+			return false;
+		}
+		Chat that = (Chat)o;
+		return this.chatId.equals(that.getChatId());
+		
 	}
 }
