@@ -1,61 +1,35 @@
 body {
 	font-family: 'Roboto Slab', serif;
-	margin: 20px;
-  background: #424242;
-  color: white;
+	height: 100%;
+	background: #EEEEEE;
+	color: #757575
 }
 
-.app {
-	display: flex;
-	flex-direction: column;
-}
-
-.app__head {
-	display: flex;
-	flex-direction: row;
-	margin-bottom: 20px;
-}
-
-.app__head--label {
-	width: 10%;
-}
-
-.app__head--input {
-	width: 50%;
-}
-
-.app__button {
-	display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-}
-
-.btn {
-	width: 250px;
-	height: 30px;
-}
-
-.btn--color {
-	background: #00B8D4;
+.header--image {
+	height: 150px;
+  background: url('../images/header-image.jpg') center / cover;
 	color: white;
 }
 
-.app__history {
-	display: flex;
-  flex-direction: row;
-  justify-content: center;
-  height: 200px;
-  overflow: auto;
+.title--left {
+	padding-left: 36px;
 }
 
-.app__error {
-	display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  height: 50px;
-  overflow: auto;
+.left__margin--30 {
+	margin-left: 30px;
 }
 
-.app__error--text {
-	 color: #D32F2F;
+.textarea--format {
+	width: 420px;
+}
+
+.button--format {
+	width: 150px;
+	margin-top: -70px;
+	margin-left: 50px;
+	color: white;
+}
+
+.item--format {
+	padding: 5px;
 }

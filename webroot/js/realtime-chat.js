@@ -4,19 +4,19 @@ window.addEventListener("DOMContentLoaded", function() {
 	// UI Elements
 	var txtChatId = document.querySelector("#txtChatId");
 	var txtChatName = document.querySelector("#txtChatName");
+	var fiContainerMessage = document.querySelector("#fiContainerMessage");
 	var txtChatMessage = document.querySelector("#txtChatMessage");
 	var ulChatHistory = document.querySelector("#ulChatHistory");
-	var pErrorMessage = document.querySelector("#pErrorMessage");
+	var errorToast = document.querySelector("#errorToast");
 	var btnSend = document.querySelector("#btnSend");
 	
 	/**
-	 * Clear Error Message
+	 * Show Toast
+	 * @param msg Error Message
 	 * @returns
 	 */
-	function _clearErrorMessage() {
-		setTimeout(function() {
-			pErrorMessage.textContent = "";
-	      }, 5000);
+	function _showErrorToast(msg) {
+		errorToast.MaterialSnackbar.showSnackbar({message: msg});
 	};
 	
 	/**
@@ -26,6 +26,7 @@ window.addEventListener("DOMContentLoaded", function() {
 	 */
 	function _createListItem(text) {
 		var li = document.createElement("li");
+		li.classList.add("mdl-typography--title", "item--format");
 		li.innerHTML = text;
 		ulChatHistory.appendChild(li);
 	};
@@ -41,7 +42,7 @@ window.addEventListener("DOMContentLoaded", function() {
 				if (xhr.status === 200) {
 					if (JSON.parse(xhr.responseText).name.length > 0) {
 						_createListItem(
-							JSON.parse(xhr.responseText).name + " says " + JSON.parse(xhr.responseText).message
+							JSON.parse(xhr.responseText).name + " <b><em>says</em></b> " + JSON.parse(xhr.responseText).message
 						);
 					}
 				}
@@ -60,12 +61,11 @@ window.addEventListener("DOMContentLoaded", function() {
 		eventBus.onopen = function() {
 			eventBus.registerHandler("chat." + txtChatId.value, function(error, message) {
 				if (error) {
-					pErrorMessage.innerHTML += "Error: " + error.message + "<br/>";
-					_clearErrorMessage();
+					_showErrorToast("Error: " + error.message);
 					return;
 				}
 				_createListItem(
-					JSON.parse(message.body).name + " says " + JSON.parse(message.body).message
+					JSON.parse(message.body).name + " <b><em>says</em></b> " + JSON.parse(message.body).message
 				);
 			});
 		}
@@ -80,14 +80,12 @@ window.addEventListener("DOMContentLoaded", function() {
 		var chatMessage = txtChatMessage.value;
 		
 		if (chatName.length <= 0) {
-			pErrorMessage.innerHTML += "Empty Chat Name is invalid! <br/>";
-			_clearErrorMessage();
+			_showErrorToast("Empty Chat Name is invalid!");
 			return;
 		}
 		
 		if (chatMessage.length <= 0) {
-			pErrorMessage.value += "Empty Chat Message is invalid! <br/>";
-			_clearErrorMessage();
+			_showErrorToast("Empty Chat Message is invalid!");
 			return;
 		}
 		
@@ -95,10 +93,12 @@ window.addEventListener("DOMContentLoaded", function() {
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState === 4) {
 				if (!xhr.status === 200) {
-					pErrorMessage.innerHTML += "Invalid Chat Message! <br/>";
-					_clearErrorMessage();
+					_showErrorToast("Invalid Chat Message!");
 				} else {
 					txtChatMessage.value = "";
+					fiContainerMessage.classList.remove("is-focused");
+					fiContainerMessage.classList.remove("is-dirty");
+					txtChatMessage.focus();
 				}
 			}
 		};
