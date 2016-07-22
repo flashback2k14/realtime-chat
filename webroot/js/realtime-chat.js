@@ -1,6 +1,8 @@
 window.addEventListener("DOMContentLoaded", function() {
 	// Base URL
-	var BASEURL = window.location.hostname.indexOf("herokuapp") > 0 ? "https://vertx-realtime-chat.herokuapp.com" : "http://localhost:7070";
+	var BASEURL = window.location.hostname.indexOf("herokuapp") > 0 
+						? "https://vertx-realtime-chat.herokuapp.com" 
+						: "http://localhost:7070";
 	// UI Elements
 	var txtChatId = document.querySelector("#txtChatId");
 	var txtChatName = document.querySelector("#txtChatName");
@@ -21,29 +23,28 @@ window.addEventListener("DOMContentLoaded", function() {
 	
 	/**
 	 * Create List Item for Chat History
-	 * @param text Chat Message
+	 * @param name Chat Name
+	 * @param msg Chat Message
 	 * @returns
 	 */
-	function _createListItem(text) {
+	function _createListItem(name, msg) {
 		var li = document.createElement("li");
 		li.classList.add("mdl-typography--title", "item--format");
-		li.innerHTML = text;
+		li.innerHTML = "&bull; &emsp; " + name + " <b><em>says</em></b> " + msg;
 		ulChatHistory.appendChild(li);
 	};
 	
 	/**
-	 * Load Chat
+	 * Initial Load Chat
 	 * @returns
 	 */
-	function _loadChat() {
+	function _initLoadChat() {
 		var xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState === 4) {
 				if (xhr.status === 200) {
 					if (JSON.parse(xhr.responseText).name.length > 0) {
-						_createListItem(
-							JSON.parse(xhr.responseText).name + " <b><em>says</em></b> " + JSON.parse(xhr.responseText).message
-						);
+						_createListItem(JSON.parse(xhr.responseText).name, JSON.parse(xhr.responseText).message);
 					}
 				}
 			}
@@ -64,9 +65,7 @@ window.addEventListener("DOMContentLoaded", function() {
 					_showErrorToast("Error: " + error.message);
 					return;
 				}
-				_createListItem(
-					JSON.parse(message.body).name + " <b><em>says</em></b> " + JSON.parse(message.body).message
-				);
+				_createListItem(JSON.parse(message.body).name, JSON.parse(message.body).message);
 			});
 		}
 	};
@@ -112,7 +111,7 @@ window.addEventListener("DOMContentLoaded", function() {
 	 * @returns
 	 */
 	function init() {
-		_loadChat();
+		_initLoadChat();
 		_registerEventbusHandler();
 		btnSend.addEventListener("click", _sendChatMessage, false);
 	};
