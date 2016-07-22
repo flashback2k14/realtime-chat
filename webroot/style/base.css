@@ -1,61 +1,47 @@
 body {
 	font-family: 'Roboto Slab', serif;
-	margin: 20px;
-  background: #424242;
-  color: white;
+	height: 100%;
+	background: #EEEEEE;
+	color: #757575
 }
 
-.app {
-	display: flex;
-	flex-direction: column;
-}
-
-.app__head {
-	display: flex;
-	flex-direction: row;
-	margin-bottom: 20px;
-}
-
-.app__head--label {
-	width: 10%;
-}
-
-.app__head--input {
-	width: 50%;
-}
-
-.app__button {
-	display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-}
-
-.btn {
-	width: 250px;
-	height: 30px;
-}
-
-.btn--color {
-	background: #00B8D4;
+.header--image {
+	height: 150px;
+  background: url('../images/header-image.jpg') center / cover;
 	color: white;
 }
 
-.app__history {
-	display: flex;
-  flex-direction: row;
-  justify-content: center;
-  height: 200px;
-  overflow: auto;
+.title--left {
+	padding-left: 36px;
 }
 
-.app__error {
-	display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  height: 50px;
-  overflow: auto;
+.content--format {
+  margin: 20px;
 }
 
-.app__error--text {
-	 color: #D32F2F;
+.button--format {
+	width: 150px;
+	color: white;
+}
+
+.item--format {
+	padding: 5px;
+}
+
+.mdl-snackbar {
+	margin-bottom: 20px;
+	background: #F44336;
+	color: white;
+}
+
+.mdl-mini-footer {
+	padding: 8px 16px;
+}
+
+.github__icon {
+	width: 24px;
+	height: 24px;
+  margin-top: 6px;
+  background: url('../images/mark-github.svg') center / cover;
+  cursor: pointer;
 }
