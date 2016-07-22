@@ -49,7 +49,7 @@ public class ChatServiceVerticle extends AbstractVerticle {
 
 	private SockJSHandler eventBusHandler() {
 		BridgeOptions options = new BridgeOptions()
-				.addOutboundPermitted(new PermittedOptions().setAddressRegex("chat\\.[0-9]+"));
+				.addOutboundPermitted(new PermittedOptions().setAddressRegex("chat\\.[a-zA-Z0-9]+"));
 		
 		return SockJSHandler.create(vertx).bridge(options, event -> {
 			if (event.type() == BridgeEventType.SOCKET_CREATED) {

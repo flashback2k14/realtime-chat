@@ -41,7 +41,7 @@ public class ChatRepository {
 		});
 	}
 	
-	public void getById(String chatId, Handler<AsyncResult<Chat>> handler){
+	public void getChatById(String chatId, Handler<AsyncResult<Chat>> handler){
 		System.out.println("CHAT ID: " + chatId);
 		mongo.find(COLLECTION, new JsonObject().put("chatId", chatId), ar -> {
 			if(ar.succeeded()){
@@ -57,14 +57,6 @@ public class ChatRepository {
 			}
 		});
 	}
-	
-//	public Optional<Chat> getById(String chatId) {
-//		LocalMap<String, String> chatSharedData = this.sharedData.getLocalMap(chatId);
-//		
-//		return Optional.of(chatSharedData)
-//				.filter(lm -> !lm.isEmpty())
-//				.map(this::convertToChat);
-//	}
 	
 	public void saveChat(Chat chat, Handler<AsyncResult<Chat>> handler){
 		System.out.println("SAVE CHAT");
@@ -99,6 +91,13 @@ public class ChatRepository {
 		});
 	}
 	
+	public Optional<Chat> getById(String chatId) {
+		LocalMap<String, String> chatSharedData = this.sharedData.getLocalMap(chatId);
+		
+		return Optional.of(chatSharedData)
+				.filter(lm -> !lm.isEmpty())
+				.map(this::convertToChat);
+	}
 	
 	public void save(Chat chat) {
 		LocalMap<String, String> chatSharedData = this.sharedData.getLocalMap(chat.getChatId());

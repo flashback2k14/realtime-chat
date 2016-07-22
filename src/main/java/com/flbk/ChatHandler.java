@@ -59,7 +59,7 @@ public class ChatHandler {
 	public void handleGetChat(RoutingContext context) {
 		String chatId = context.request().getParam("id");
 		System.out.println("GET CHAT WITH ID: " + chatId);
-		this.repository.getById(chatId, ar -> {
+		this.repository.getChatById(chatId, ar -> {
 			if (ar.succeeded()) {
 				if (Objects.nonNull(ar.result())) {
 					System.out.println("RESP: " + ar.result().toJson().encodePrettily());
@@ -97,7 +97,10 @@ public class ChatHandler {
 
 		this.repository.saveMessage(chatId, msg, ar -> {
 			if (ar.succeeded()) {
-				context.vertx().eventBus().publish("chat." + chatId, context.getBodyAsString());
+				System.out.println("PUBLISH MSG: " + context.getBodyAsString());
+				String address = "chat." + chatId;
+				System.out.println("EV ADDRESS: " + address);
+				context.vertx().eventBus().publish(address, context.getBodyAsString());
 				context.response().setStatusCode(200).end();
 			} else {
 				context.vertx().eventBus().publish("chat." + chatId, "Sending messages failed");
