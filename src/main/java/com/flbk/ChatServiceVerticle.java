@@ -2,7 +2,6 @@ package com.flbk;
 
 
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
@@ -40,14 +39,19 @@ public class ChatServiceVerticle extends AbstractVerticle {
 			.requestHandler(router::accept)
 			.listen(Integer.getInteger("port", 7070), result -> {
 				if (result.succeeded()) {
+					logger.info("Http server was started");
 					startFuture.complete();
 				} else {
+					logger.info("Start of the http server failed");
 					startFuture.fail(result.cause());
 				}
 			});
 	}
 
 	private SockJSHandler eventBusHandler() {
+		
+		logger.info("Configure eventbus bridge");
+		
 		BridgeOptions options = new BridgeOptions()
 				.addOutboundPermitted(new PermittedOptions().setAddressRegex("chat\\.[a-zA-Z0-9]+"));
 		
@@ -67,18 +71,18 @@ public class ChatServiceVerticle extends AbstractVerticle {
 		JsonObject dbConf = new JsonObject()
     			.put("db_name", "chats")
     			.put("connection_string", "mongodb://localhost:27017");
-		DeploymentOptions opts = new DeploymentOptions().setConfig(dbConf);
 		
-		ChatRepository repository = new ChatRepository(vertx.sharedData(), vertx, dbConf);
+		ChatRepository repository = new ChatRepository(vertx, dbConf);
 		ChatHandler chatHandler = new ChatHandler(repository);
 		
 		Router router = Router.router(vertx);
+		
+		// Enables reading request body from the related requests
 		router.route().handler(BodyHandler.create());
 		
 		router.route().consumes("application/json");
 		router.route().produces("application/json");
 		
-//		router.route("/chats/:id").handler(chatHandler::initChatInSharedData);
 		router.get("/chats/:id").handler(chatHandler::handleGetChat);
 		router.post("/chats/:id/messages").handler(chatHandler::handleChangedChatMessage);
 		router.post("/chats").handler(chatHandler::handleAddChat);

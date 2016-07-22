@@ -73,6 +73,26 @@ public class Chat {
 	public String getChatId() {
 		return chatId;
 	}
+	
+	public void setChatId(String chatId){
+		this.chatId = chatId;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public List<Message> getMessages() {
+		return messages;
+	}
+
+	public void setMessages(List<Message> messages) {
+		this.messages = messages;
+	}
 
 	public String getChatDesc() {
 		return chatDesc;

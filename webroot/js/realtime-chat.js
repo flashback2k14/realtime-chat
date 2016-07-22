@@ -52,14 +52,9 @@ window
 						xhr.onreadystatechange = function() {
 							if (xhr.readyState === 4) {
 								if (xhr.status === 200) {
-									console.log("Get chats: ", JSON
-											.parse(xhr.responseText))
 									if (JSON.parse(xhr.responseText).chatId.length > 0) {
-										console.log("Get chats: ", JSON
-												.parse(xhr.responseText))
 										JSON.parse(xhr.responseText).messages
 												.forEach(function(el) {
-													console.log(el);
 													_createListItem(el.author
 															+ " says "
 															+ el.content);
@@ -68,8 +63,6 @@ window
 								}
 							}
 						};
-						console.log("GET", BASEURL + "/api/chats/"
-								+ txtChatId.value)
 						xhr.open("GET", BASEURL + "/api/chats/"
 								+ txtChatId.value);
 						xhr.send();
@@ -83,14 +76,11 @@ window
 					 */
 					function _registerEventbusHandler() {
 						var eventBus = new EventBus(BASEURL + "/eventbus");
-						console.log("EV created");
 						eventBus.onopen = function() {
 							eventBus
 									.registerHandler(
 											"chat." + txtChatId.value,
 											function(error, message) {
-												console.log("CALL HANDLER");
-												console.log("MSG: " + message);
 												if (error) {
 													pErrorMessage.innerHTML += "Error: "
 															+ error.message
