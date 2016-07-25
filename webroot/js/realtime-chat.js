@@ -12,6 +12,8 @@ window.addEventListener("DOMContentLoaded", function() {
 	var ulChatHistory = document.querySelector("#ulChatHistory");
 	var errorToast = document.querySelector("#errorToast");
 	var btnSend = document.querySelector("#btnSend");
+	var messageContent = document.querySelector("#messageContent");
+	var messageContent = document.querySelector("#messageChatName");
 
 	/**
 	 * Clear Error Message
@@ -33,10 +35,24 @@ window.addEventListener("DOMContentLoaded", function() {
 	 * @returns
 	 */
 	function _createListItem(name, msg) {
-		var li = document.createElement("li");
-		li.classList.add("mdl-typography--title", "item--format");
-		li.innerHTML = "&bull; &emsp; " + name + " <b><em>says</em></b> " + msg;
-		ulChatHistory.appendChild(li);
+		var wrapper = document.createElement("div");
+		wrapper.classList.add("message-card");
+		
+		var header = document.createElement("div");
+		
+		var heading = document.createElement("p");
+		heading.classList.add();
+		heading.innerHTML = "<b><em>" + name + " says:</em></b>";
+		
+		var content = document.createElement("div");
+		content.classList.add("message-card-content");
+		content.innerHTML = msg;
+		
+		header.appendChild(heading);
+		wrapper.appendChild(header);
+		wrapper.appendChild(content);
+		
+		ulChatHistory.appendChild(wrapper);
 	};
 
 	/**
@@ -53,7 +69,8 @@ window.addEventListener("DOMContentLoaded", function() {
 						JSON.parse(xhr.responseText).messages
 							.forEach(function(el) {
 								_createListItem(
-										el.author + " says " + el.content
+										el.author,
+										el.content
 								);
 							});
 					}
@@ -78,9 +95,8 @@ window.addEventListener("DOMContentLoaded", function() {
 					return;
 				}
 				_createListItem(
-						JSON.parse(message.body).author
-						+ " says "
-						+ JSON.parse(message.body).content
+						JSON.parse(message.body).author,
+						JSON.parse(message.body).content
 				);
 			});
 		}
