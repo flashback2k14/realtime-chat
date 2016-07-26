@@ -1,9 +1,8 @@
 window.addEventListener("DOMContentLoaded", function() {
 	// Base URL
 	var BASEURL = window.location.hostname.indexOf("herokuapp") > 0 
-					? "https://vertx-realtime-chat.herokuapp.com"
-					: "http://localhost:7070";
-
+										? "https://vertx-realtime-chat.herokuapp.com"
+										: "http://localhost:7070";
 	// UI Elements
 	var txtChatId = document.querySelector("#txtChatId");
 	var txtChatName = document.querySelector("#txtChatName");
@@ -16,22 +15,18 @@ window.addEventListener("DOMContentLoaded", function() {
 	var messageContent = document.querySelector("#messageChatName");
 
 	/**
-	 * Clear Error Message
-	 * 
-
+	 * Show Toast
+	 * @param msg Error Message
 	 * @returns
 	 */
-	function _clearErrorMessage() {
-		setTimeout(function() {
-			pErrorMessage.textContent = "";
-		}, 5000);
+	function _showErrorToast(msg) {
+		errorToast.MaterialSnackbar.showSnackbar({message: msg});
 	};
 
 	/**
 	 * Create List Item for Chat History
-	 * 
-	 * @param text
-	 *            Chat Message
+	 * @param name Chat Name
+	 * @param msg Chat Message
 	 * @returns
 	 */
 	function _createListItem(name, msg) {
@@ -56,7 +51,7 @@ window.addEventListener("DOMContentLoaded", function() {
 	};
 
 	/**
-	 * Load Chat
+	 * Initial Load Chat
 	 * 
 	 * @returns
 	 */
@@ -68,10 +63,7 @@ window.addEventListener("DOMContentLoaded", function() {
 					if (JSON.parse(xhr.responseText).chatId.length > 0) {
 						JSON.parse(xhr.responseText).messages
 							.forEach(function(el) {
-								_createListItem(
-										el.author,
-										el.content
-								);
+								_createListItem(el.author, el.content);
 							});
 					}
 				}
@@ -83,7 +75,6 @@ window.addEventListener("DOMContentLoaded", function() {
 
 	/**
 	 * Register Event Bus
-	 * 
 	 * @returns
 	 */
 	function _registerEventbusHandler() {
@@ -94,10 +85,7 @@ window.addEventListener("DOMContentLoaded", function() {
 					_showErrorToast("Error: " + error.message);
 					return;
 				}
-				_createListItem(
-						JSON.parse(message.body).author,
-						JSON.parse(message.body).content
-				);
+				_createListItem(JSON.parse(message.body).author, JSON.parse(message.body).content);
 			});
 		}
 	};
