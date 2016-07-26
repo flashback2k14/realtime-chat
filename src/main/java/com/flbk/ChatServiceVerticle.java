@@ -69,8 +69,8 @@ public class ChatServiceVerticle extends AbstractVerticle {
 	
 	private Router chatApiRouter() {
 		JsonObject dbConf = new JsonObject()
-    			.put("db_name", "chats")
-    			.put("connection_string", "mongodb://localhost:27017");
+    			.put("db_name", System.getProperty("dbname"))
+    			.put("connection_string", System.getProperty("dburl"));
 		
 		ChatRepository repository = new ChatRepository(vertx, dbConf);
 		ChatHandler chatHandler = new ChatHandler(repository);
