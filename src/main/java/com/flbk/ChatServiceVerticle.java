@@ -1,7 +1,9 @@
 package com.flbk;
 
+
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.Router;
@@ -37,16 +39,21 @@ public class ChatServiceVerticle extends AbstractVerticle {
 			.requestHandler(router::accept)
 			.listen(Integer.getInteger("port", 7070), result -> {
 				if (result.succeeded()) {
+					logger.info("Http server was started");
 					startFuture.complete();
 				} else {
+					logger.info("Start of the http server failed");
 					startFuture.fail(result.cause());
 				}
 			});
 	}
 
 	private SockJSHandler eventBusHandler() {
+		
+		logger.info("Configure eventbus bridge");
+		
 		BridgeOptions options = new BridgeOptions()
-				.addOutboundPermitted(new PermittedOptions().setAddressRegex("chat\\.[0-9]+"));
+				.addOutboundPermitted(new PermittedOptions().setAddressRegex("chat\\.[a-zA-Z0-9]+"));
 		
 		return SockJSHandler.create(vertx).bridge(options, event -> {
 			if (event.type() == BridgeEventType.SOCKET_CREATED) {
@@ -61,18 +68,25 @@ public class ChatServiceVerticle extends AbstractVerticle {
 	}
 	
 	private Router chatApiRouter() {
-		ChatRepository repository = new ChatRepository(vertx.sharedData());
+		JsonObject dbConf = new JsonObject()
+    			.put("db_name", System.getProperty("dbname"))
+    			.put("connection_string", System.getProperty("dburl"));
+		
+		ChatRepository repository = new ChatRepository(vertx, dbConf);
 		ChatHandler chatHandler = new ChatHandler(repository);
 		
 		Router router = Router.router(vertx);
+		
+		// Enables reading request body from the related requests
 		router.route().handler(BodyHandler.create());
 		
 		router.route().consumes("application/json");
 		router.route().produces("application/json");
 		
-		router.route("/chats/:id").handler(chatHandler::initChatInSharedData);
 		router.get("/chats/:id").handler(chatHandler::handleGetChat);
-		router.patch("/chats/:id").handler(chatHandler::handleChangedChatMessage);
+		router.post("/chats/:id/messages").handler(chatHandler::handleChangedChatMessage);
+		router.post("/chats").handler(chatHandler::handleAddChat);
+		router.get("/chats").handler(chatHandler::handleGetAllChats);
 		
 		return router;
 	}
