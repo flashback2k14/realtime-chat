@@ -11,6 +11,8 @@ window.addEventListener("DOMContentLoaded", function() {
 	var ulChatHistory = document.querySelector("#ulChatHistory");
 	var errorToast = document.querySelector("#errorToast");
 	var btnSend = document.querySelector("#btnSend");
+	var messageContent = document.querySelector("#messageContent");
+	var messageContent = document.querySelector("#messageChatName");
 
 	/**
 	 * Show Toast
@@ -28,10 +30,24 @@ window.addEventListener("DOMContentLoaded", function() {
 	 * @returns
 	 */
 	function _createListItem(name, msg) {
-		var li = document.createElement("li");
-		li.classList.add("mdl-typography--title", "item--format");
-		li.innerHTML = "&bull; &emsp; " + name + " <b><em>says</em></b> " + msg;
-		ulChatHistory.appendChild(li);
+		var wrapper = document.createElement("div");
+		wrapper.classList.add("message-card");
+		
+		var header = document.createElement("div");
+		
+		var heading = document.createElement("p");
+		heading.classList.add();
+		heading.innerHTML = "<b><em>" + name + " says:</em></b>";
+		
+		var content = document.createElement("div");
+		content.classList.add("message-card-content");
+		content.innerHTML = msg;
+		
+		header.appendChild(heading);
+		wrapper.appendChild(header);
+		wrapper.appendChild(content);
+		
+		ulChatHistory.appendChild(wrapper);
 	};
 
 	/**
@@ -47,9 +63,7 @@ window.addEventListener("DOMContentLoaded", function() {
 					if (JSON.parse(xhr.responseText).chatId.length > 0) {
 						JSON.parse(xhr.responseText).messages
 							.forEach(function(el) {
-								_createListItem(
-										el.author + " says " + el.content
-								);
+								_createListItem(el.author, el.content);
 							});
 					}
 				}
@@ -61,7 +75,6 @@ window.addEventListener("DOMContentLoaded", function() {
 
 	/**
 	 * Register Event Bus
-	 * 
 	 * @returns
 	 */
 	function _registerEventbusHandler() {
@@ -72,11 +85,7 @@ window.addEventListener("DOMContentLoaded", function() {
 					_showErrorToast("Error: " + error.message);
 					return;
 				}
-				_createListItem(
-						JSON.parse(message.body).author
-						+ " says "
-						+ JSON.parse(message.body).content
-				);
+				_createListItem(JSON.parse(message.body).author, JSON.parse(message.body).content);
 			});
 		}
 	};

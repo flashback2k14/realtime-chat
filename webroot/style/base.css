@@ -45,3 +45,17 @@ body {
   background: url('../images/mark-github.svg') center / cover;
   cursor: pointer;
 }
+
+.message-card {
+	width: 100%;
+	background: rgba(0, 0, 0, 0.0);
+}
+
+.message-card-content {
+	background: rgba(255, 255, 255, 1.0);
+	margin-top: -10px;
+	margin-bottom: 15px;
+	margin-left: 10px;
+	padding: 10px;
+	border-radius: 5px;
+}
