@@ -1,6 +1,8 @@
 window.addEventListener("DOMContentLoaded", function() {
 	// Base URL
-	var BASEURL = window.location.hostname.indexOf("herokuapp") > 0 ? "https://vertx-realtime-chat.herokuapp.com" : "http://localhost:7070";
+	var BASEURL = window.location.hostname.indexOf("herokuapp") > 0 
+					? "https://vertx-realtime-chat.herokuapp.com"
+					: "http://localhost:7070";
 	// UI Elements
 	var txtChatId = document.querySelector("#txtChatId");
 	var txtChatName = document.querySelector("#txtChatName");
@@ -8,20 +10,23 @@ window.addEventListener("DOMContentLoaded", function() {
 	var ulChatHistory = document.querySelector("#ulChatHistory");
 	var pErrorMessage = document.querySelector("#pErrorMessage");
 	var btnSend = document.querySelector("#btnSend");
-	
+
 	/**
 	 * Clear Error Message
+	 * 
 	 * @returns
 	 */
 	function _clearErrorMessage() {
 		setTimeout(function() {
 			pErrorMessage.textContent = "";
-	      }, 5000);
+		}, 5000);
 	};
-	
+
 	/**
 	 * Create List Item for Chat History
-	 * @param text Chat Message
+	 * 
+	 * @param text
+	 *            Chat Message
 	 * @returns
 	 */
 	function _createListItem(text) {
@@ -29,9 +34,10 @@ window.addEventListener("DOMContentLoaded", function() {
 		li.innerHTML = text;
 		ulChatHistory.appendChild(li);
 	};
-	
+
 	/**
 	 * Load Chat
+	 * 
 	 * @returns
 	 */
 	function _loadChat() {
@@ -39,20 +45,24 @@ window.addEventListener("DOMContentLoaded", function() {
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState === 4) {
 				if (xhr.status === 200) {
-					if (JSON.parse(xhr.responseText).name.length > 0) {
-						_createListItem(
-							JSON.parse(xhr.responseText).name + " says " + JSON.parse(xhr.responseText).message
-						);
+					if (JSON.parse(xhr.responseText).chatId.length > 0) {
+						JSON.parse(xhr.responseText).messages
+							.forEach(function(el) {
+								_createListItem(
+										el.author + " says " + el.content
+								);
+							});
 					}
 				}
 			}
 		};
-		xhr.open("GET", BASEURL + "/api/chats/" + txtChatId.value);
+		xhr.open("GET", BASEURL + "/api/chats/"	+ txtChatId.value);
 		xhr.send();
 	};
-	
+
 	/**
 	 * Register Event Bus
+	 * 
 	 * @returns
 	 */
 	function _registerEventbusHandler() {
@@ -65,32 +75,35 @@ window.addEventListener("DOMContentLoaded", function() {
 					return;
 				}
 				_createListItem(
-					JSON.parse(message.body).name + " says " + JSON.parse(message.body).message
+						JSON.parse(message.body).author
+						+ " says "
+						+ JSON.parse(message.body).content
 				);
 			});
 		}
 	};
-	
+
 	/**
 	 * Send Chat Message
+	 * 
 	 * @returns
 	 */
 	function _sendChatMessage() {
 		var chatName = txtChatName.value;
 		var chatMessage = txtChatMessage.value;
-		
+
 		if (chatName.length <= 0) {
 			pErrorMessage.innerHTML += "Empty Chat Name is invalid! <br/>";
 			_clearErrorMessage();
 			return;
 		}
-		
+
 		if (chatMessage.length <= 0) {
 			pErrorMessage.value += "Empty Chat Message is invalid! <br/>";
 			_clearErrorMessage();
 			return;
 		}
-		
+
 		var xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState === 4) {
@@ -102,13 +115,17 @@ window.addEventListener("DOMContentLoaded", function() {
 				}
 			}
 		};
-		xhr.open("PATCH", BASEURL + "/api/chats/" + txtChatId.value);
+		xhr.open("POST", BASEURL + "/api/chats/" + txtChatId.value + "/messages")
 		xhr.setRequestHeader("Content-Type", "application/json");
-		xhr.send(JSON.stringify({name: chatName, message: chatMessage}));
+		xhr.send(JSON.stringify({
+			author : chatName,
+			content : chatMessage
+		}));
 	};
-	
+
 	/**
 	 * Call private Function
+	 * 
 	 * @returns
 	 */
 	function init() {
@@ -116,7 +133,7 @@ window.addEventListener("DOMContentLoaded", function() {
 		_registerEventbusHandler();
 		btnSend.addEventListener("click", _sendChatMessage, false);
 	};
-	
+
 	/**
 	 * Load Chat and Register Event Listeners
 	 */

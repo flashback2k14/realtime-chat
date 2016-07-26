@@ -1,0 +1,34 @@
+{
+	"_id": "5789f5657de0643782b93490",
+	"chatId": "TestChat1",
+	"chatDesc": "Test Chat Description",
+	"messages": [
+		{
+			"mid":"1D2DDSF4543",
+			"author":"John Doe",
+			"content":"Hi folks!"
+		},
+		{
+			"mid":"1Df4DSF4543",
+			"author":"John Doe",
+			"content":"Hi folks!"
+		}
+	]
+}
+{
+	"_id": "5789f5657de0643782b93491",
+	"chatId": "TestChat2",
+	"chatDesc": "Test Chat Description",
+	"messages": [
+		{
+			"mid":"1D2DDSF4543",
+			"author":"Mary May",
+			"content":"Bye folks!"
+		},
+		{
+			"mid":"1Df4DSF4543",
+			"author":"Mary May",
+			"content":"Bye folks!"
+		}
+	]
+}

@@ -11,7 +11,7 @@ built with Vert.x 3 and SockJS
 - Run the Server with
 
   ```shell
-  java -jar -Dport=7070 build/libs/VertxSocketChat-fat.jar
+  java -jar -Dport=7070 -Ddbname="chats" -Ddburl="mongodb://localhost:27017" build/libs/VertxSocketChat-fat.jar
   ````
 
 - available under
