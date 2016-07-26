@@ -1,46 +1,45 @@
 window.addEventListener("DOMContentLoaded", function() {
 	// Base URL
 	var BASEURL = window.location.hostname.indexOf("herokuapp") > 0 
-					? "https://vertx-realtime-chat.herokuapp.com"
-					: "http://localhost:7070";
+										? "https://vertx-realtime-chat.herokuapp.com"
+										: "http://localhost:7070";
 	// UI Elements
 	var txtChatId = document.querySelector("#txtChatId");
 	var txtChatName = document.querySelector("#txtChatName");
+	var fiContainerMessage = document.querySelector("#fiContainerMessage");
 	var txtChatMessage = document.querySelector("#txtChatMessage");
 	var ulChatHistory = document.querySelector("#ulChatHistory");
-	var pErrorMessage = document.querySelector("#pErrorMessage");
+	var errorToast = document.querySelector("#errorToast");
 	var btnSend = document.querySelector("#btnSend");
 
 	/**
-	 * Clear Error Message
-	 * 
+	 * Show Toast
+	 * @param msg Error Message
 	 * @returns
 	 */
-	function _clearErrorMessage() {
-		setTimeout(function() {
-			pErrorMessage.textContent = "";
-		}, 5000);
+	function _showErrorToast(msg) {
+		errorToast.MaterialSnackbar.showSnackbar({message: msg});
 	};
 
 	/**
 	 * Create List Item for Chat History
-	 * 
-	 * @param text
-	 *            Chat Message
+	 * @param name Chat Name
+	 * @param msg Chat Message
 	 * @returns
 	 */
-	function _createListItem(text) {
+	function _createListItem(name, msg) {
 		var li = document.createElement("li");
-		li.innerHTML = text;
+		li.classList.add("mdl-typography--title", "item--format");
+		li.innerHTML = "&bull; &emsp; " + name + " <b><em>says</em></b> " + msg;
 		ulChatHistory.appendChild(li);
 	};
 
 	/**
-	 * Load Chat
+	 * Initial Load Chat
 	 * 
 	 * @returns
 	 */
-	function _loadChat() {
+	function _initLoadChat() {
 		var xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState === 4) {
@@ -70,8 +69,7 @@ window.addEventListener("DOMContentLoaded", function() {
 		eventBus.onopen = function() {
 			eventBus.registerHandler("chat." + txtChatId.value, function(error, message) {
 				if (error) {
-					pErrorMessage.innerHTML += "Error: " + error.message + "<br/>";
-					_clearErrorMessage();
+					_showErrorToast("Error: " + error.message);
 					return;
 				}
 				_createListItem(
@@ -93,14 +91,12 @@ window.addEventListener("DOMContentLoaded", function() {
 		var chatMessage = txtChatMessage.value;
 
 		if (chatName.length <= 0) {
-			pErrorMessage.innerHTML += "Empty Chat Name is invalid! <br/>";
-			_clearErrorMessage();
+			_showErrorToast("Empty Chat Name is invalid!");
 			return;
 		}
 
 		if (chatMessage.length <= 0) {
-			pErrorMessage.value += "Empty Chat Message is invalid! <br/>";
-			_clearErrorMessage();
+			_showErrorToast("Empty Chat Message is invalid!");
 			return;
 		}
 
@@ -108,10 +104,12 @@ window.addEventListener("DOMContentLoaded", function() {
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState === 4) {
 				if (!xhr.status === 200) {
-					pErrorMessage.innerHTML += "Invalid Chat Message! <br/>";
-					_clearErrorMessage();
+					_showErrorToast("Invalid Chat Message!");
 				} else {
 					txtChatMessage.value = "";
+					fiContainerMessage.classList.remove("is-focused");
+					fiContainerMessage.classList.remove("is-dirty");
+					txtChatMessage.focus();
 				}
 			}
 		};
@@ -129,7 +127,7 @@ window.addEventListener("DOMContentLoaded", function() {
 	 * @returns
 	 */
 	function init() {
-		_loadChat();
+		_initLoadChat();
 		_registerEventbusHandler();
 		btnSend.addEventListener("click", _sendChatMessage, false);
 	};
