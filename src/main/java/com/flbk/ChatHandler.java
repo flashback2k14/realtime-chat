@@ -66,6 +66,7 @@ public class ChatHandler {
 			if (ar.succeeded()) {
 				if (Objects.nonNull(ar.result())) {
 					logger.info("Fetching the chat succeeded: Respond with 200 OK");
+					System.out.println("CHAT --> " + ar.result());
 					context.response().putHeader("content-type", "application/json").setStatusCode(200)
 							.end(ar.result().toJson().encodePrettily());
 				} else {

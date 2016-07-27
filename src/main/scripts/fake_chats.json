@@ -6,12 +6,14 @@
 		{
 			"mid":"1D2DDSF4543",
 			"author":"John Doe",
-			"content":"Hi folks!"
+			"content":"Hi folks!",
+			"created": "1469610810907"
 		},
 		{
 			"mid":"1Df4DSF4543",
 			"author":"John Doe",
-			"content":"Hi folks!"
+			"content":"Hi folks!",
+			"created": "1469610810950"
 		}
 	]
 }
