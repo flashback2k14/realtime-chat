@@ -56,7 +56,7 @@ public class ChatRepository {
 	}
 	
 	public void saveChat(Chat chat, Handler<AsyncResult<Chat>> handler) {
-		logger.info("Save chat: " + chat.toJson().encodePrettily());
+		logger.info("Save chat: " + chat.getChatId());
 
 		chat.resetDbId(); // Reset id if already set
 
@@ -72,7 +72,7 @@ public class ChatRepository {
 	}
 	
 	public void saveMessage(String chatId, Message msg, Handler<AsyncResult<Message>> handler) {
-		logger.info("Add message " + msg.toJson().encodePrettily() + " to chat " + chatId);
+		logger.info("Add message to chat: " + chatId);
 		
 		JsonObject query = new JsonObject().put("chatId", chatId);
 		JsonObject update = new JsonObject().put("$push", new JsonObject().put("messages", msg.toJson()));

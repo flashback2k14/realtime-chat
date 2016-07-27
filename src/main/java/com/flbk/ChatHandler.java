@@ -60,7 +60,8 @@ public class ChatHandler {
 					context.response().putHeader("content-type", "application/json").setStatusCode(200)
 							.end(ar.result().toJson().encodePrettily());
 				} else {
-					context.response().putHeader("content-type", "application/json").setStatusCode(404).end();
+					context.response().putHeader("content-type", "application/json").setStatusCode(404)
+							.end(ar.cause().getMessage());
 				}
 			} else {
 				context.response().putHeader("content-type", "application/json").setStatusCode(500)
