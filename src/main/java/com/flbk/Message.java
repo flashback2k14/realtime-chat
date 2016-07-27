@@ -14,19 +14,19 @@ public class Message {
 		mid = UUID.randomUUID().toString();
 	}
 	
-	public Message(String author, String content){
+	public Message(String author, String content) {
 		mid = UUID.randomUUID().toString();
-		this.author =author;
+		this.author = author;
 		this.content = content;
 	}
 	
-	public Message(JsonObject json){
+	public Message(JsonObject json) {
 		this.mid = json.getString("mid");
 		this.author = json.getString("author");
 		this.content = json.getString("content");
 	}
 	
-	public JsonObject toJson(){
+	public JsonObject toJson() {
 		return new JsonObject()
 				.put("mid", mid)
 				.put("author", author)
@@ -48,8 +48,4 @@ public class Message {
 	public void setContent(String content) {
 		this.content = content;
 	}
-	
-	
-	
-	
 }

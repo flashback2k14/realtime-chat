@@ -32,7 +32,7 @@ public class ChatServiceVerticle extends AbstractVerticle {
 		router.route().failureHandler(errorHandler());
 		// serve frontend
 		router.route().handler(staticHandler());
-				
+		
 		// create server
 		vertx
 			.createHttpServer()

@@ -13,7 +13,7 @@ public class Chat {
 	private String chatDesc;
 	private List<Message> messages = new ArrayList<>();
 	
-	public Chat(){}
+	public Chat() {}
 	
 	public Chat(String id, String chatId, String chatDesc) {
 		this.id = id;
@@ -31,22 +31,23 @@ public class Chat {
 		this.chatDesc = "";
 	}
 	
-	public Chat(JsonObject json){
+	public Chat(JsonObject json) {
 		this.id = json.getString("_id");
 		this.chatId = json.getString("chatId");
 		this.chatDesc = json.getString("chatDesc");
 		JsonArray msgs = json.getJsonArray("messages");
 		msgs.forEach(msg -> {
-			this.addMessage(new Message((JsonObject)msg));
+			this.addMessage(new Message((JsonObject) msg));
 		});
 	}
 	
-	public JsonObject toJson(){
+	public JsonObject toJson() {
 		JsonObject j = new JsonObject()
 				.put("chatId", this.chatId)
 				.put("chatDesc", this.chatDesc)
 				.put("messages", new JsonArray(messages));
-		if(this.id != null && !this.id.isEmpty()){
+
+		if (this.id != null && !this.id.isEmpty()) {
 			System.out.println("ID NOT EMPTY");
 			j.put("_id", this.id);
 		}
@@ -54,11 +55,11 @@ public class Chat {
 		return j;
 	}
 	
-	public void addMessage(Message msg){
+	public void addMessage(Message msg) {
 		this.messages.add(msg);
 	}
 	
-	public void resetDbId(){
+	public void resetDbId() {
 		this.id = null;
 	}
 
@@ -74,7 +75,7 @@ public class Chat {
 		return chatId;
 	}
 	
-	public void setChatId(String chatId){
+	public void setChatId(String chatId) {
 		this.chatId = chatId;
 	}
 
@@ -116,15 +117,14 @@ public class Chat {
 	}
 	
 	@Override
-	public boolean equals(Object o){
-		if(o == this){
+	public boolean equals(Object o) {
+		if (o == this) {
 			return true;
 		}
-		if(!(o instanceof Chat)){
+		if (!(o instanceof Chat)) {
 			return false;
 		}
-		Chat that = (Chat)o;
+		Chat that = (Chat) o;
 		return this.chatId.equals(that.getChatId());
-		
 	}
 }
