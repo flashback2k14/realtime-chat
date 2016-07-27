@@ -11,8 +11,6 @@ window.addEventListener("DOMContentLoaded", function() {
 	var ulChatHistory = document.querySelector("#ulChatHistory");
 	var errorToast = document.querySelector("#errorToast");
 	var btnSend = document.querySelector("#btnSend");
-	var messageContent = document.querySelector("#messageContent");
-	var messageContent = document.querySelector("#messageChatName");
 
 	/**
 	 * Show Toast
@@ -31,7 +29,7 @@ window.addEventListener("DOMContentLoaded", function() {
 	 */
 	function _createListItem(name, msg) {
 		var wrapper = document.createElement("div");
-		wrapper.classList.add("message-card");
+		wrapper.classList.add("message__card");
 		
 		var header = document.createElement("div");
 		
@@ -40,7 +38,7 @@ window.addEventListener("DOMContentLoaded", function() {
 		heading.innerHTML = "<b><em>" + name + " says:</em></b>";
 		
 		var content = document.createElement("div");
-		content.classList.add("message-card-content");
+		content.classList.add("message__card--content");
 		content.innerHTML = msg;
 		
 		header.appendChild(heading);
@@ -48,6 +46,17 @@ window.addEventListener("DOMContentLoaded", function() {
 		wrapper.appendChild(content);
 		
 		ulChatHistory.appendChild(wrapper);
+	};
+
+	/**
+	 * Scroll to last Chat Message
+	 * @returns
+	 */
+	function _scrollToBottom() {
+		// get all message cards
+		var items = document.querySelectorAll(".message__card");
+		// scroll into last card
+		items[items.length - 1].scrollIntoView(true);
 	};
 
 	/**
@@ -115,10 +124,15 @@ window.addEventListener("DOMContentLoaded", function() {
 				if (!xhr.status === 200) {
 					_showErrorToast("Invalid Chat Message!");
 				} else {
+					// clear input
 					txtChatMessage.value = "";
+					// remove classes to reset the layout
 					fiContainerMessage.classList.remove("is-focused");
 					fiContainerMessage.classList.remove("is-dirty");
+					// set focus to message field
 					txtChatMessage.focus();
+					// scroll to last chat message
+					_scrollToBottom();
 				}
 			}
 		};
