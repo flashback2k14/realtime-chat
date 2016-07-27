@@ -19,9 +19,32 @@ body {
   margin: 20px;
 }
 
+.left__site--fixed {
+	position: fixed;
+	top: 85px;
+}
+
+.right__site--margin {
+	margin-left: 400px;
+}
+
 .button--format {
 	width: 150px;
 	color: white;
+}
+
+.message__card {
+	width: 100%;
+	background: rgba(0, 0, 0, 0.0);
+}
+
+.message__card--content {
+	background: rgba(255, 255, 255, 1.0);
+	margin-top: -10px;
+	margin-bottom: 15px;
+	margin-left: 10px;
+	padding: 10px;
+	border-radius: 5px;
 }
 
 .item--format {
@@ -35,7 +58,7 @@ body {
 }
 
 .mdl-mini-footer {
-	padding: 8px 16px;
+	padding: 8px 16px 22px 16px;
 }
 
 .github__icon {
@@ -44,20 +67,6 @@ body {
   margin-top: 6px;
   background: url('../images/mark-github.svg') center / cover;
   cursor: pointer;
-}
-
-.message-card {
-	width: 100%;
-	background: rgba(0, 0, 0, 0.0);
-}
-
-.message-card-content {
-	background: rgba(255, 255, 255, 1.0);
-	margin-top: -10px;
-	margin-bottom: 15px;
-	margin-left: 10px;
-	padding: 10px;
-	border-radius: 5px;
 }
 
 .message-created-time {
