@@ -66,7 +66,6 @@ public class ChatHandler {
 			if (ar.succeeded()) {
 				if (Objects.nonNull(ar.result())) {
 					logger.info("Fetching the chat succeeded: Respond with 200 OK");
-					System.out.println("CHAT --> " + ar.result());
 					context.response().putHeader("content-type", "application/json").setStatusCode(200)
 							.end(ar.result().toJson().encodePrettily());
 				} else {
@@ -97,8 +96,8 @@ public class ChatHandler {
 				logger.info("Adding the message succeeded: Respond with 200 OK");
 				String address = "chat." + chatId;
 				logger.info("Publish the message to every client registerd to the address: " + address);
-				context.vertx().eventBus().publish(address, context.getBodyAsString());
-				context.response().setStatusCode(200).end();
+				context.vertx().eventBus().publish(address, msg.toJson().encodePrettily());
+				context.response().setStatusCode(201).end();
 			} else {
 				String address = "chat." + chatId;
 				logger.info("Adding message failed: Publish a error message to all clients registerd to the address: " + address);

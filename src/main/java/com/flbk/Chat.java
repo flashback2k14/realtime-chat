@@ -37,9 +37,7 @@ public class Chat {
 		this.chatId = json.getString("chatId");
 		this.chatDesc = json.getString("chatDesc");
 		JsonArray msgs = json.getJsonArray("messages");
-		System.out.println("MSGS: " + msgs);
 		msgs.forEach(msg -> {
-			System.out.println("MSG: " + (JsonObject)msg);
 			this.addMessage(new Message((JsonObject)msg));
 		});
 	}
@@ -50,7 +48,6 @@ public class Chat {
 				.put("chatDesc", this.chatDesc)
 				.put("messages", new JsonArray(messages));
 		if(this.id != null && !this.id.isEmpty()){
-			System.out.println("ID NOT EMPTY");
 			j.put("_id", this.id);
 		}
 		
