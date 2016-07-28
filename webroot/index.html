@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.indigo-red.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab">
+    <link rel="stylesheet" href="./style/libs/getmdl-select.min.css">
     <link rel="stylesheet" href="./style/base.css">
   </head>
   <body>
@@ -23,13 +24,24 @@
         <div class="mdl-grid content--format">
         
 	        <!-- Left Site -->
-	        <div class="mdl-cell mdl-cell--4-col left__site--fixed"
+	        <div class="mdl-cell mdl-cell--4-col left__site--fixed">
 	          <!-- Chat ID -->
 	          <div class="mdl-cell mdl-cell--12-col">
-	            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <input class="mdl-textfield__input" type="text" id="txtChatId" value="TestChat1" readonly>
-                <label class="mdl-textfield__label" for="txtChatId">Chat ID...</label>
+	            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label getmdl-select" id="fiContainerId">
+                <input class="mdl-textfield__input" value="" type="text" id="txtChatId" tabIndex="-1" />
+                <label for="txtChatId">
+                    <i class="mdl-icon-toggle__label material-icons">keyboard_arrow_down</i>
+                </label>
+                <label class="mdl-textfield__label" for="txtChatId">Chat ID</label>
+                <ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu" for="txtChatId">
+                  <li class="mdl-menu__item">TestChat1</li>
+                  <li class="mdl-menu__item">TestChat2</li>
+                </ul>
               </div>
+
+              <button class="mdl-button mdl-js-button mdl-button--icon" id="btnClearCombobox">
+                <i class="material-icons">clear</i>
+              </button>
 	          </div>
 	          <!-- Chat Name -->
 	          <div class="mdl-cell mdl-cell--12-col">
@@ -73,13 +85,13 @@
       </main>
       
       <!-- Footer -->
-      <footer class="mdl-mini-footer">
+      <footer class="footer--format">
 			  <div class="mdl-mini-footer__left-section">
 			    <div class="mdl-logo github__icon"></div>
 			    <ul class="mdl-mini-footer__link-list">
 			      <li>
 			       <a href="https://github.com/flashback2k14/realtime-chat" 
-			          target="_blank" role="utton" title="Github">
+			          target="_blank" role="button" title="Github">
 			          Github
 			       </a>
 			      </li>
@@ -97,6 +109,7 @@
     <!-- scripts -->
     <script defer src="https://code.getmdl.io/1.1.3/material.min.js"></script>
     <script src="//cdn.jsdelivr.net/sockjs/1/sockjs.min.js"></script>
+    <script src="./js/libs/getmdl-select.min.js"></script>
     <script src="./js/libs/vertx-eventbus.js"></script>
     <script src="./js/realtime-chat.js"></script>
   </body>

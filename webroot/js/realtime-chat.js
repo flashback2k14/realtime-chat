@@ -5,6 +5,8 @@ window.addEventListener("DOMContentLoaded", function() {
 										: "http://localhost:7070";
 	// UI Elements
 	var txtChatId = document.querySelector("#txtChatId");
+	var fiContainerId = document.querySelector("#fiContainerId");
+	var btnClearCombobox = document.querySelector("#btnClearCombobox");
 	var txtChatName = document.querySelector("#txtChatName");
 	var fiContainerMessage = document.querySelector("#fiContainerMessage");
 	var txtChatMessage = document.querySelector("#txtChatMessage");
@@ -34,7 +36,6 @@ window.addEventListener("DOMContentLoaded", function() {
 		var header = document.createElement("div");
 		
 		var heading = document.createElement("p");
-		heading.classList.add();
 		heading.innerHTML = "<b><em>" + name + " says:</em></b>";
 		
 		var content = document.createElement("div");
@@ -60,11 +61,11 @@ window.addEventListener("DOMContentLoaded", function() {
 	};
 
 	/**
-	 * Initial Load Chat
+	 * Load Chat
 	 * 
 	 * @returns
 	 */
-	function _initLoadChat() {
+	function _loadChat() {
 		var xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState === 4) {
@@ -97,6 +98,37 @@ window.addEventListener("DOMContentLoaded", function() {
 				_createListItem(JSON.parse(message.body).author, JSON.parse(message.body).content);
 			});
 		}
+	};
+
+	/**
+	 * 
+	 */
+	function _clearListView() {
+		if (ulChatHistory.childNodes.length > 0) {
+			ulChatHistory.innerHTML = "";
+		}
+	};
+
+	/**
+	 * 
+	 */
+	function _clearComboBox() {
+		// clear input
+		txtChatId.value = "";
+		// remove classes to reset the layout
+		fiContainerId.classList.remove("is-focused");
+		fiContainerId.classList.remove("is-dirty");
+		// clear list view
+		_clearListView();
+	};
+
+	/**
+	 * 
+	 */
+	function _chatIdChanged() {
+		_clearListView();
+		_loadChat();
+		_registerEventbusHandler();
 	};
 
 	/**
@@ -150,8 +182,8 @@ window.addEventListener("DOMContentLoaded", function() {
 	 * @returns
 	 */
 	function init() {
-		_initLoadChat();
-		_registerEventbusHandler();
+		txtChatId.addEventListener("change", _chatIdChanged, false);
+		btnClearCombobox.addEventListener("click", _clearComboBox, false);
 		btnSend.addEventListener("click", _sendChatMessage, false);
 	};
 
