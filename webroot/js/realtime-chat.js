@@ -9,16 +9,33 @@ window.addEventListener("DOMContentLoaded", function() {
 	/**
 	 * Get UI Elements from Document
 	 */
-	var txtChatId = document.querySelector("#txtChatId");
+	// Combobox - Chat ID
 	var fiContainerId = document.querySelector("#fiContainerId");
-	var btnClearCombobox = document.querySelector("#btnClearCombobox");
+	var cboChatId = document.querySelector("#cboChatId");
 	var ulChatIds = document.querySelector("#ulChatIds");
+	// Open Show Dialog
+	var btnAddChatId = document.querySelector("#btnAddChatId");
+	// Clear Chat
+	var btnClearCombobox = document.querySelector("#btnClearCombobox");
+	// Chat Name
 	var txtChatName = document.querySelector("#txtChatName");
+	// Chat Message
 	var fiContainerMessage = document.querySelector("#fiContainerMessage");
 	var txtChatMessage = document.querySelector("#txtChatMessage");
-	var ulChatHistory = document.querySelector("#ulChatHistory");
-	var errorToast = document.querySelector("#errorToast");
+	// Send Chat Message
 	var btnSend = document.querySelector("#btnSend");
+	// Chat History
+	var ulChatHistory = document.querySelector("#ulChatHistory");
+	// Error Toast
+	var errorToast = document.querySelector("#errorToast");
+	// Dialog
+	var addDialog = document.querySelector("#addDialog");
+	var fiContainerNewId = document.querySelector("#fiContainerNewId");
+	var txtDialogChatId = document.querySelector("#txtDialogChatId");
+	var fiContainerNewDesc = document.querySelector("#fiContainerNewDesc");
+	var txtDialogChatDescription = document.querySelector("#txtDialogChatDescription");
+	var btnDialogSave = document.querySelector("#btnDialogSave");
+	var btnDialogCancel = document.querySelector("#btnDialogCancel");
 
 	/**
 	 * Show Toast
@@ -92,10 +109,12 @@ window.addEventListener("DOMContentLoaded", function() {
 			xhr.onreadystatechange = function() {
 				if (xhr.readyState === 4) {
 					// check xhr status
-					if (xhr.status === 200) {
-						resolve(JSON.parse(xhr.responseText));
-					} else if (xhr.status === 201) {
-						resolve();
+					if (xhr.status === 200 || xhr.status === 201) {
+						if (xhr.responseText) {
+							resolve(JSON.parse(xhr.responseText));
+						} else {
+							resolve();
+						}
 					} else {
 						reject(new Error(xhr.status + ": " + xhr.statusText));
 					}
@@ -120,7 +139,7 @@ window.addEventListener("DOMContentLoaded", function() {
 	 * @returns
 	 */
 	function _loadChat() {
-		_dataRequester("/api/chats/" + txtChatId.value)
+		_dataRequester("/api/chats/" + cboChatId.value)
 			.then(function(response) {
 				response.messages.forEach(function(message) {
 					_createListItem(message.author, message.content, message.created);
@@ -138,7 +157,7 @@ window.addEventListener("DOMContentLoaded", function() {
 	function _registerEventbusHandler() {
 		var eventBus = new EventBus(BASEURL + "/eventbus");
 		eventBus.onopen = function() {
-			eventBus.registerHandler("chat." + txtChatId.value, function(error, message) {
+			eventBus.registerHandler("chat." + cboChatId.value, function(error, message) {
 				if (error) {
 					_showErrorToast("Error: " + error.message);
 					return;
@@ -167,7 +186,7 @@ window.addEventListener("DOMContentLoaded", function() {
 	 */
 	function _clearComboBox() {
 		// clear input
-		txtChatId.value = "";
+		cboChatId.value = "";
 		// remove classes to reset the layout
 		fiContainerId.classList.remove("is-focused");
 		fiContainerId.classList.remove("is-dirty");
@@ -212,7 +231,7 @@ window.addEventListener("DOMContentLoaded", function() {
 			content: chatMessage
 		};
 		// send message
-		_dataRequester("/api/chats/" + txtChatId.value + "/messages", body)
+		_dataRequester("/api/chats/" + cboChatId.value + "/messages", body)
 			.then(function() {
 				// clear input
 				txtChatMessage.value = "";
@@ -259,12 +278,92 @@ window.addEventListener("DOMContentLoaded", function() {
 	};
 
 	/**
+	 * Show Add Dialog
+	 * @returns
+	 */
+	function _showAddChatIdDialog() {
+		addDialog.showModal();
+	};
+
+	/**
+	 * Clear Dialog Inputs
+	 * @returns
+	 */
+	function _clearDialogInputs() {
+		txtDialogChatId.value = "";
+		txtDialogChatDescription.value = "";
+		// remove classes to reset the layout
+		fiContainerNewId.classList.remove("is-focused");
+		fiContainerNewId.classList.remove("is-dirty");
+		// remove classes to reset the layout
+		fiContainerNewDesc.classList.remove("is-focused");
+		fiContainerNewDesc.classList.remove("is-dirty");
+	};
+
+	/**
+	 * Save new Chat
+	 * @returns
+	 */
+	function _saveChat() {
+		// get Inputs
+		var newChatId = txtDialogChatId.value;
+		var newChatDescription = txtDialogChatDescription.value;
+		// check if new Chat ID is not empty
+		if (newChatId.length <= 0) {
+			_showErrorToast("Empty Chat Id is invalid!");
+			return;
+		}
+		// check if new Chat Description is not empty
+		if (newChatDescription.length <= 0) {
+			_showErrorToast("Empty Chat Description is invalid!");
+			return;
+		}
+		// create new Chat Object
+		var body = {
+			chatId: newChatId,
+			chatDesc: newChatDescription
+		};
+		// send request to server
+		_dataRequester("/api/chats", body)
+			.then(function(response) {
+				// add new List item to combobox
+				_createComboboxItem(response.chatId);
+				// reload combobox
+				getmdlSelect.init(".getmdl-select");
+				// clear Dialog inputs
+				_clearDialogInputs();
+				// close Dialog
+				addDialog.close();
+			})
+			.catch(function(error) {
+				_showErrorToast(error.message);
+			});
+	};
+
+	/**
+	 * Close Add Dialog
+	 * @returns
+	 */
+	function _cancelDialog() {
+		addDialog.close();
+	};
+
+	/**
 	 * Get Chat IDs and Setup Eventlisteners
 	 * @returns
 	 */
 	function init() {
+		// register Dialog
+		if (!addDialog.showModal) {
+			dialogPolyfill.registerDialog(addDialog);
+		}
+		// get Chat IDs
 		_getChatIds();
-		txtChatId.addEventListener("change", _chatIdChanged, false);
+		// Eventlisteners
+		cboChatId.addEventListener("change", _chatIdChanged, false);
+		btnAddChatId.addEventListener("click", _showAddChatIdDialog, false);
+		btnDialogSave.addEventListener("click", _saveChat, false);
+		btnDialogCancel.addEventListener("click", _cancelDialog, false);
 		btnClearCombobox.addEventListener("click", _clearComboBox, false);
 		btnSend.addEventListener("click", _sendChatMessage, false);
 	};

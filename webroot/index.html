@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.indigo-red.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab">
     <link rel="stylesheet" href="./style/libs/getmdl-select.min.css">
+    <link rel="stylesheet" href="./style/libs/dialog-polyfill.css">
     <link rel="stylesheet" href="./style/base.css">
   </head>
   <body>
@@ -28,14 +29,18 @@
 	          <!-- Chat ID -->
 	          <div class="mdl-cell mdl-cell--12-col">
 	            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label getmdl-select" id="fiContainerId">
-                <input class="mdl-textfield__input" value="" type="text" id="txtChatId" readonly tabIndex="-1" />
-                <label for="txtChatId">
+                <input class="mdl-textfield__input" type="text" id="cboChatId" readonly tabIndex="-1" />
+                <label for="cboChatId">
                     <i class="mdl-icon-toggle__label material-icons">keyboard_arrow_down</i>
                 </label>
-                <label class="mdl-textfield__label" for="txtChatId">Chat ID</label>
-                <ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu" id="ulChatIds" for="txtChatId">
+                <label class="mdl-textfield__label" for="cboChatId">Chat ID</label>
+                <ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu" id="ulChatIds" for="cboChatId">
                 </ul>
               </div>
+              <!--Add new Chat ID -->
+              <button class="mdl-button mdl-js-button mdl-button--icon" id="btnAddChatId">
+                <i class="material-icons">add</i>
+              </button>
               <!-- Clear Chat ID-->
               <button class="mdl-button mdl-js-button mdl-button--icon" id="btnClearCombobox">
                 <i class="material-icons">clear</i>
@@ -97,6 +102,33 @@
 			  </div>
 			</footer>
 			
+      <!-- Dialog -->
+      <dialog class="mdl-dialog" id="addDialog">
+        <div class="mdl-dialog__title">
+          <div class="mdl-typography--subhead mdl-typography--text-uppercase">
+            Create new Chat
+          </div>
+        </div>
+        <div class="mdl-dialog__content">
+          <div class="mdl-typography--text-left">
+            <!-- new Chat ID -->
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="fiContainerNewId">
+              <input class="mdl-textfield__input" type="text" id="txtDialogChatId">
+              <label class="mdl-textfield__label" for="txtChatName">New Chat ID...</label>
+            </div>
+            <!-- new Chat Description-->
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="fiContainerNewDesc">
+              <input class="mdl-textfield__input" type="text" id="txtDialogChatDescription">
+              <label class="mdl-textfield__label" for="txtChatName">New Chat Description...</label>
+            </div>
+          </div>
+        </div>
+        <div class="mdl-dialog__actions">
+          <button class="mdl-button" id="btnDialogSave">Save</button>
+          <button class="mdl-button" id="btnDialogCancel">Cancel</button>
+        </div>
+      </dialog>
+
 			<!-- Errors -->
       <div id="errorToast" class="mdl-js-snackbar mdl-snackbar">
         <div class="mdl-snackbar__text"></div>
@@ -108,6 +140,7 @@
     <script defer src="https://code.getmdl.io/1.1.3/material.min.js"></script>
     <script src="//cdn.jsdelivr.net/sockjs/1/sockjs.min.js"></script>
     <script src="./js/libs/getmdl-select.min.js"></script>
+    <script src="./js/libs/dialog-polyfill.js"></script>
     <script src="./js/libs/vertx-eventbus.js"></script>
     <script src="./js/realtime-chat.js"></script>
   </body>
