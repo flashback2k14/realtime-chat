@@ -28,17 +28,15 @@
 	          <!-- Chat ID -->
 	          <div class="mdl-cell mdl-cell--12-col">
 	            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label getmdl-select" id="fiContainerId">
-                <input class="mdl-textfield__input" value="" type="text" id="txtChatId" tabIndex="-1" />
+                <input class="mdl-textfield__input" value="" type="text" id="txtChatId" readonly tabIndex="-1" />
                 <label for="txtChatId">
                     <i class="mdl-icon-toggle__label material-icons">keyboard_arrow_down</i>
                 </label>
                 <label class="mdl-textfield__label" for="txtChatId">Chat ID</label>
-                <ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu" for="txtChatId">
-                  <li class="mdl-menu__item">TestChat1</li>
-                  <li class="mdl-menu__item">TestChat2</li>
+                <ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu" id="ulChatIds" for="txtChatId">
                 </ul>
               </div>
-
+              <!-- Clear Chat ID-->
               <button class="mdl-button mdl-js-button mdl-button--icon" id="btnClearCombobox">
                 <i class="material-icons">clear</i>
               </button>

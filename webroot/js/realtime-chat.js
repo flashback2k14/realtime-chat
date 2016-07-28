@@ -12,6 +12,7 @@ window.addEventListener("DOMContentLoaded", function() {
 	var txtChatId = document.querySelector("#txtChatId");
 	var fiContainerId = document.querySelector("#fiContainerId");
 	var btnClearCombobox = document.querySelector("#btnClearCombobox");
+	var ulChatIds = document.querySelector("#ulChatIds");
 	var txtChatName = document.querySelector("#txtChatName");
 	var fiContainerMessage = document.querySelector("#fiContainerMessage");
 	var txtChatMessage = document.querySelector("#txtChatMessage");
@@ -229,10 +230,40 @@ window.addEventListener("DOMContentLoaded", function() {
 	};
 
 	/**
-	 * Setup Eventlisteners
+	 * Create List item for Chat ID Combobox
+	 * @param {any} msg Chat ID
+	 * @returns
+	 */
+	function _createComboboxItem(msg) {
+		var li = document.createElement("li");
+		li.classList.add("mdl-menu__item");
+		li.innerText = msg;
+		ulChatIds.appendChild(li);
+	};
+
+	/**
+	 * Get Chat IDs from server
+	 * @returns
+	 */
+	function _getChatIds() {
+		_dataRequester("/api/chats")
+			.then(function(response) {
+				response.forEach(function(chatObj) {
+					_createComboboxItem(chatObj.chatId);
+				});
+				getmdlSelect.init(".getmdl-select");
+			})
+			.catch(function(error) {
+				_showErrorToast(error.message);
+			});
+	};
+
+	/**
+	 * Get Chat IDs and Setup Eventlisteners
 	 * @returns
 	 */
 	function init() {
+		_getChatIds();
 		txtChatId.addEventListener("change", _chatIdChanged, false);
 		btnClearCombobox.addEventListener("click", _clearComboBox, false);
 		btnSend.addEventListener("click", _sendChatMessage, false);
