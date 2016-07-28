@@ -1,9 +1,14 @@
 window.addEventListener("DOMContentLoaded", function() {
-	// Base URL
+	/**
+	 * Base URL
+	 */
 	var BASEURL = window.location.hostname.indexOf("herokuapp") > 0 
 										? "https://vertx-realtime-chat.herokuapp.com"
 										: "http://localhost:7070";
-	// UI Elements
+	
+	/**
+	 * Get UI Elements from Document
+	 */
 	var txtChatId = document.querySelector("#txtChatId");
 	var fiContainerId = document.querySelector("#fiContainerId");
 	var btnClearCombobox = document.querySelector("#btnClearCombobox");
@@ -27,38 +32,37 @@ window.addEventListener("DOMContentLoaded", function() {
 	 * Create List Item for Chat History
 	 * @param name Chat Name
 	 * @param msg Chat Message
+	 * @param timestamp Chat Message created time
 	 * @returns
 	 */
 	function _createListItem(name, msg, timestamp) {
+		// wrapper element
 		var wrapper = document.createElement("div");
 		wrapper.classList.add("message__card");
-		
+		// heading element
 		var header = document.createElement("div");
-		
 		var heading = document.createElement("p");
 		heading.innerHTML = "<b><em>" + name + " says:</em></b>";
-		
+		// content message element
 		var content = document.createElement("div");
 		content.classList.add("message__card--content");
 		content.innerHTML = msg;
-		
+		// content timestamp element
 		var createdAt = document.createElement("p");
-		createdAt.classList.add("message-created-time", "mdl-typography--text-right");
-		
+		createdAt.classList.add("message__card--created", "mdl-typography--text-right");
+		// convert timestamp into readable time
 		timeStampOpts = {
 				year:"numeric", month:"numeric", day:"numeric",
 				hour:"numeric", minute:"numeric", second: "numeric"
 		}
-		createdAt.innerHTML = new Intl.DateTimeFormat(
-				"en-US",
-				timeStampOpts)
-			.format(new Date().setTime(timestamp));
-		
+		createdAt.innerHTML = new Intl.DateTimeFormat("en-US", timeStampOpts)
+															.format(new Date().setTime(timestamp));
+		// add elements to the parents
 		header.appendChild(heading);
 		wrapper.appendChild(header);
 		content.appendChild(createdAt);
 		wrapper.appendChild(content);
-		
+		// add list item to the list view
 		ulChatHistory.appendChild(wrapper);
 	};
 
@@ -74,27 +78,56 @@ window.addEventListener("DOMContentLoaded", function() {
 	};
 
 	/**
+	 * Requester Data from Server
+	 * @param {String} route
+	 * @param {Object} body
+	 * @returns Promise
+	 */
+	function _dataRequester(route, body) {
+		return new Promise(function(resolve, reject) {
+			// create xhr object
+			var xhr = new XMLHttpRequest();
+			// init listener
+			xhr.onreadystatechange = function() {
+				if (xhr.readyState === 4) {
+					// check xhr status
+					if (xhr.status === 200) {
+						resolve(JSON.parse(xhr.responseText));
+					} else if (xhr.status === 201) {
+						resolve();
+					} else {
+						reject(new Error(xhr.status + ": " + xhr.statusText));
+					}
+				}
+			};
+			// check if body object is available
+			// 	- Yes --> make a POST request
+			//	- No  --> make a GET request
+			if (body) {
+				xhr.open("POST", BASEURL + route)
+				xhr.setRequestHeader("Content-Type", "application/json");
+				xhr.send(JSON.stringify(body));
+			} else {
+				xhr.open("GET", BASEURL + route);
+				xhr.send();
+			}
+		});
+	};
+
+	/**
 	 * Load Chat
-	 * 
 	 * @returns
 	 */
 	function _loadChat() {
-		var xhr = new XMLHttpRequest();
-		xhr.onreadystatechange = function() {
-			if (xhr.readyState === 4) {
-				if (xhr.status === 200) {
-					if (JSON.parse(xhr.responseText).chatId.length > 0) {
-						
-						JSON.parse(xhr.responseText).messages
-							.forEach(function(el) {
-								_createListItem(el.author, el.content, el.created);
-							});
-					}
-				}
-			}
-		};
-		xhr.open("GET", BASEURL + "/api/chats/"	+ txtChatId.value);
-		xhr.send();
+		_dataRequester("/api/chats/" + txtChatId.value)
+			.then(function(response) {
+				response.messages.forEach(function(message) {
+					_createListItem(message.author, message.content, message.created);
+				});
+			})
+			.catch(function(error) {
+				_showErrorToast(error.message);
+			});
 	};
 
 	/**
@@ -110,16 +143,16 @@ window.addEventListener("DOMContentLoaded", function() {
 					return;
 				}
 				var json = JSON.parse(message.body);
-				_createListItem(
-						json.author,
-						json.content,
-						json.created);
+				if (json) {
+					_createListItem(json.author, json.content, json.created);
+				}
 			});
 		}
 	};
 
 	/**
-	 * 
+	 * Clear List View from Chat Messages
+	 * @returns
 	 */
 	function _clearListView() {
 		if (ulChatHistory.childNodes.length > 0) {
@@ -128,7 +161,8 @@ window.addEventListener("DOMContentLoaded", function() {
 	};
 
 	/**
-	 * 
+	 * Clear Combobox and List View
+	 * @returns
 	 */
 	function _clearComboBox() {
 		// clear input
@@ -141,7 +175,11 @@ window.addEventListener("DOMContentLoaded", function() {
 	};
 
 	/**
-	 * 
+	 * Handle changed Chat IDs
+	 * 	- clear List View
+	 * 	- Load Chat messages for specific Chat ID
+	 * 	- Register Eventbus for specific Chat ID
+	 * @returns
 	 */
 	function _chatIdChanged() {
 		_clearListView();
@@ -151,52 +189,47 @@ window.addEventListener("DOMContentLoaded", function() {
 
 	/**
 	 * Send Chat Message
-	 * 
 	 * @returns
 	 */
 	function _sendChatMessage() {
+		// get Chat Name and Chat Message
 		var chatName = txtChatName.value;
 		var chatMessage = txtChatMessage.value;
-
+		// check that Chat Name is not Empty
 		if (chatName.length <= 0) {
 			_showErrorToast("Empty Chat Name is invalid!");
 			return;
 		}
-
+		// check that Chat Message is not Empty
 		if (chatMessage.length <= 0) {
 			_showErrorToast("Empty Chat Message is invalid!");
 			return;
 		}
-
-		var xhr = new XMLHttpRequest();
-		xhr.onreadystatechange = function() {
-			if (xhr.readyState === 4) {
-				if (!xhr.status === 200) {
-					_showErrorToast("Invalid Chat Message!");
-				} else {
-					// clear input
-					txtChatMessage.value = "";
-					// remove classes to reset the layout
-					fiContainerMessage.classList.remove("is-focused");
-					fiContainerMessage.classList.remove("is-dirty");
-					// set focus to message field
-					txtChatMessage.focus();
-					// scroll to last chat message
-					_scrollToBottom();
-				}
-			}
+		// create body Object for sending to the server
+		var body = {
+			author: chatName, 
+			content: chatMessage
 		};
-		xhr.open("POST", BASEURL + "/api/chats/" + txtChatId.value + "/messages")
-		xhr.setRequestHeader("Content-Type", "application/json");
-		xhr.send(JSON.stringify({
-			author : chatName,
-			content : chatMessage
-		}));
+		// send message
+		_dataRequester("/api/chats/" + txtChatId.value + "/messages", body)
+			.then(function() {
+				// clear input
+				txtChatMessage.value = "";
+				// remove classes to reset the layout
+				fiContainerMessage.classList.remove("is-focused");
+				fiContainerMessage.classList.remove("is-dirty");
+				// set focus to message field
+				txtChatMessage.focus();
+				// scroll to last chat message
+				_scrollToBottom();
+			})
+			.catch(function(error) {
+				_showErrorToast("Invalid Chat Message! " + error.message);
+			});
 	};
 
 	/**
-	 * Call private Function
-	 * 
+	 * Setup Eventlisteners
 	 * @returns
 	 */
 	function init() {
@@ -206,7 +239,8 @@ window.addEventListener("DOMContentLoaded", function() {
 	};
 
 	/**
-	 * Load Chat and Register Event Listeners
+	 * Setup Eventlisteners if DOM content fully loaded
+	 * @returns
 	 */
 	init();
 });
