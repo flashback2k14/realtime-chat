@@ -68,3 +68,9 @@ body {
   background: url('../images/mark-github.svg') center / cover;
   cursor: pointer;
 }
+
+.message-created-time {
+	font-size: 11px;
+	margin-bottom: -7px;
+	color: #AAAAAA;
+}
