@@ -29,7 +29,7 @@ window.addEventListener("DOMContentLoaded", function() {
 	 * @param msg Chat Message
 	 * @returns
 	 */
-	function _createListItem(name, msg) {
+	function _createListItem(name, msg, timestamp) {
 		var wrapper = document.createElement("div");
 		wrapper.classList.add("message__card");
 		
@@ -42,8 +42,21 @@ window.addEventListener("DOMContentLoaded", function() {
 		content.classList.add("message__card--content");
 		content.innerHTML = msg;
 		
+		var createdAt = document.createElement("p");
+		createdAt.classList.add("message-created-time", "mdl-typography--text-right");
+		
+		timeStampOpts = {
+				year:"numeric", month:"numeric", day:"numeric",
+				hour:"numeric", minute:"numeric", second: "numeric"
+		}
+		createdAt.innerHTML = new Intl.DateTimeFormat(
+				"en-US",
+				timeStampOpts)
+			.format(new Date().setTime(timestamp));
+		
 		header.appendChild(heading);
 		wrapper.appendChild(header);
+		content.appendChild(createdAt);
 		wrapper.appendChild(content);
 		
 		ulChatHistory.appendChild(wrapper);
@@ -71,9 +84,10 @@ window.addEventListener("DOMContentLoaded", function() {
 			if (xhr.readyState === 4) {
 				if (xhr.status === 200) {
 					if (JSON.parse(xhr.responseText).chatId.length > 0) {
+						
 						JSON.parse(xhr.responseText).messages
 							.forEach(function(el) {
-								_createListItem(el.author, el.content);
+								_createListItem(el.author, el.content, el.created);
 							});
 					}
 				}
@@ -95,7 +109,11 @@ window.addEventListener("DOMContentLoaded", function() {
 					_showErrorToast("Error: " + error.message);
 					return;
 				}
-				_createListItem(JSON.parse(message.body).author, JSON.parse(message.body).content);
+				var json = JSON.parse(message.body);
+				_createListItem(
+						json.author,
+						json.content,
+						json.created);
 			});
 		}
 	};
