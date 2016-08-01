@@ -32,7 +32,7 @@ public class ChatServiceVerticle extends AbstractVerticle {
 		router.route().failureHandler(errorHandler());
 		// serve frontend
 		router.route().handler(staticHandler());
-				
+		
 		// create server
 		vertx
 			.createHttpServer()
@@ -83,8 +83,8 @@ public class ChatServiceVerticle extends AbstractVerticle {
 		router.route().consumes("application/json");
 		router.route().produces("application/json");
 		
-		router.get("/chats/:id").handler(chatHandler::handleGetChat);
-		router.post("/chats/:id/messages").handler(chatHandler::handleChangedChatMessage);
+		router.get("/chats/:id").handler(chatHandler::handleGetChat); // implemented into Frontend
+		router.post("/chats/:id/messages").handler(chatHandler::handleChangedChatMessage); // implemented into Frontend
 		router.post("/chats").handler(chatHandler::handleAddChat);
 		router.get("/chats").handler(chatHandler::handleGetAllChats);
 		
