@@ -5,7 +5,7 @@ window.addEventListener("DOMContentLoaded", function() {
 	var BASEURL = window.location.hostname.indexOf("herokuapp") > 0 
 										? "https://vertx-realtime-chat.herokuapp.com"
 										: "http://localhost:7070";
-	
+
 	/**
 	 * Get UI Elements from Document
 	 */
@@ -151,10 +151,10 @@ window.addEventListener("DOMContentLoaded", function() {
 	};
 
 	/**
-	 * Register Event Bus
+	 * Register Event Bus to get Chat Messages
 	 * @returns
 	 */
-	function _registerEventbusHandler() {
+	function _registerEventbusHandlerMessages() {
 		var eventBus = new EventBus(BASEURL + "/eventbus");
 		eventBus.onopen = function() {
 			eventBus.registerHandler("chat." + cboChatId.value, function(error, message) {
@@ -164,7 +164,38 @@ window.addEventListener("DOMContentLoaded", function() {
 				}
 				var json = JSON.parse(message.body);
 				if (json) {
-					_createListItem(json.author, json.content, json.created);
+					if (json.hasOwnProperty("error")) {
+						_showErrorToast(json.error);
+					} else {
+						_createListItem(json.author, json.content, json.created);
+					}	
+				}
+			});
+		}
+	};
+
+	/**
+	 * Register Event Bus to get Chat Ids
+	 * @returns
+	 */
+	function _registerEventbusHandlerIds() {
+		var eventBus = new EventBus(BASEURL + "/eventbus/ids");
+		eventBus.onopen = function() {
+			eventBus.registerHandler("chat-ids", function(error, message) {
+				if (error) {
+					_showErrorToast("Error: " + error.message);
+					return;
+				}
+				var json = JSON.parse(message.body);
+				if (json) {
+					if (json.hasOwnProperty("error")) {
+						_showErrorToast(json.error);
+					} else {
+						// add new List item to combobox
+						_createComboboxItem(json.chatId);
+						// reload combobox
+						getmdlSelect.init(".getmdl-select");
+					}
 				}
 			});
 		}
@@ -204,7 +235,7 @@ window.addEventListener("DOMContentLoaded", function() {
 	function _chatIdChanged() {
 		_clearListView();
 		_loadChat();
-		_registerEventbusHandler();
+		_registerEventbusHandlerMessages();
 	};
 
 	/**
@@ -326,10 +357,8 @@ window.addEventListener("DOMContentLoaded", function() {
 		// send request to server
 		_dataRequester("/api/chats", body)
 			.then(function(response) {
-				// add new List item to combobox
-				_createComboboxItem(response.chatId);
-				// reload combobox
-				getmdlSelect.init(".getmdl-select");
+				// show user notification
+				_showErrorToast("New Chat was added!");
 				// clear Dialog inputs
 				_clearDialogInputs();
 				// close Dialog
@@ -359,6 +388,8 @@ window.addEventListener("DOMContentLoaded", function() {
 		}
 		// get Chat IDs
 		_getChatIds();
+		// register eventbus for new added Chats
+		_registerEventbusHandlerIds();
 		// Eventlisteners
 		cboChatId.addEventListener("change", _chatIdChanged, false);
 		btnAddChatId.addEventListener("click", _showAddChatIdDialog, false);

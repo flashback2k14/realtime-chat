@@ -49,7 +49,6 @@ public class Chat {
 				.put("messages", new JsonArray(messages));
 
 		if (this.id != null && !this.id.isEmpty()) {
-			System.out.println("ID NOT EMPTY");
 			j.put("_id", this.id);
 		}
 		

@@ -22,29 +22,33 @@ public class ChatHandler {
 		
 		logger.info("Handle request to add a single chat");
 		Chat c = Json.decodeValue(context.getBodyAsString(), Chat.class);
+		String address = "chat-ids";
 
 		this.repository.getAllChats(ar -> {
 			if (ar.succeeded()) {
 				List<Chat> chats = ar.result();
 				if (chats.contains(c)) {
-					context.response().putHeader("content-type", "application/json").setStatusCode(400)
-						.end(new JsonObject()
-										.put("error", "A chat with the provided idendtifier already exists")
-										.encodePrettily());
+					context.response()
+						.putHeader("content-type", "application/json")
+						.setStatusCode(400)
+						.end(createErrorObject("A chat with the provided idendtifier already exists"));
 				} else {
 					this.repository.saveChat(c, ar1 -> {
 						if (ar1.succeeded()) {
-							context.response().putHeader("content-type", "application/json").setStatusCode(201)
-									.end(ar1.result().toJson().encodePrettily());
+							context.vertx().eventBus().publish(address, ar1.result().toJson().encodePrettily());
+							context.response().setStatusCode(201).end();
 						} else {
-							context.response().putHeader("content-type", "application/json").setStatusCode(500)
-								.end(ar1.cause().getMessage());
+							context.vertx().eventBus().publish(address, "Addition failed: Respond with 500 INTERNAL SERVER ERROR");
+							context.response()
+								.putHeader("content-type", "application/json")
+								.setStatusCode(500)
+								.end(createErrorObject("Addition failed: Respond with 500 INTERNAL SERVER ERROR"));
 						}
 					});
 				}
 			} else {
-				context.response().putHeader("content-type", "application/json").setStatusCode(500)
-					.end(ar.cause().getMessage());
+				context.vertx().eventBus().publish(address, "Chat Id already exists!");
+				context.response().setStatusCode(500).end();
 			}
 		});
 	}
@@ -85,7 +89,10 @@ public class ChatHandler {
 				context.response().setStatusCode(201).end();
 			} else {
 				context.vertx().eventBus().publish(address, "Sending messages failed");
-				context.response().setStatusCode(500).end(ar.cause().getMessage());
+				context.response()
+					.putHeader("content-type", "application/json")
+					.setStatusCode(500)
+					.end(createErrorObject(ar.cause().getMessage()));
 			}
 		});
 	}
@@ -103,5 +110,9 @@ public class ChatHandler {
 						.end(ar.cause().getMessage());
 			}
 		});
+	}
+
+	private String createErrorObject(String msg) {
+		return new JsonObject().put("error", msg).encodePrettily();
 	}
 }

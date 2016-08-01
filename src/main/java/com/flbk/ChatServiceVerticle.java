@@ -25,7 +25,8 @@ public class ChatServiceVerticle extends AbstractVerticle {
 		Router router = Router.router(vertx);
 		
 		// handle events
-		router.route("/eventbus/*").handler(eventBusHandler());
+		router.route("/eventbus/*").handler(eventBusHandlerMessages());
+		router.route("/eventbus/ids/*").handler(eventBusHandlerIds());
 		// handle api
 		router.mountSubRouter("/api", chatApiRouter());
 		// handle errors
@@ -48,10 +49,7 @@ public class ChatServiceVerticle extends AbstractVerticle {
 			});
 	}
 
-	private SockJSHandler eventBusHandler() {
-		
-		logger.info("Configure eventbus bridge");
-		
+	private SockJSHandler eventBusHandlerMessages() {
 		BridgeOptions options = new BridgeOptions()
 				.addOutboundPermitted(new PermittedOptions().setAddressRegex("chat\\.[a-zA-Z0-9]+"));
 		
@@ -62,11 +60,27 @@ public class ChatServiceVerticle extends AbstractVerticle {
 			if (event.type() == BridgeEventType.SOCKET_CLOSED) {
 				logger.info("A chat socket was closed!");
 			}
-			
+
 			event.complete(true);
 		});
 	}
 	
+	private SockJSHandler eventBusHandlerIds() {
+		BridgeOptions options = new BridgeOptions()
+				.addOutboundPermitted(new PermittedOptions().setAddress("chat-ids"));
+
+		return SockJSHandler.create(vertx).bridge(options, event -> {
+			if (event.type() == BridgeEventType.SOCKET_CREATED) {
+				logger.info("A client was created to listening for new created Chat IDs!");
+			}
+			if (event.type() == BridgeEventType.SOCKET_CLOSED) {
+				logger.info("A client was closed to listening for new created Chat IDs!");
+			}
+			
+			event.complete(true);
+		});
+	}
+
 	private Router chatApiRouter() {
 		JsonObject dbConf = new JsonObject()
     			.put("db_name", System.getProperty("dbname"))
