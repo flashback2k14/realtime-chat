@@ -18,26 +18,26 @@ public class Message {
 		addTimestamp();
 	}
 	
-	public Message(String author, String content){
+	public Message(String author, String content) {
 		mid = UUID.randomUUID().toString();
-		this.author =author;
+		this.author = author;
 		this.content = content;
 		addTimestamp();
 	}
 	
-	public Message(JsonObject json){		
+	public Message(JsonObject json) {
 		this.mid = json.getString("mid");
 		this.author = json.getString("author");
 		this.content = json.getString("content");
 		String ts = json.getString("created");
-		if(Objects.isNull(ts)){
+		if (Objects.isNull(ts)) {
 			this.created = "";
-		}else{
+		} else {
 			this.created = json.getString("created");
 		}
 	}
 	
-	public JsonObject toJson(){
+	public JsonObject toJson() {
 		return new JsonObject()
 				.put("mid", mid)
 				.put("author", author)
@@ -65,8 +65,8 @@ public class Message {
 		this.content = content;
 	}
 	
-	private void addTimestamp(){
-		if(this.created == null || this.created.isEmpty()){
+	private void addTimestamp() {
+		if (this.created == null || this.created.isEmpty()) {
 			this.created = String.valueOf(new Date().getTime());
 		}
 	}
@@ -82,6 +82,4 @@ public class Message {
 		       + created
 		       + "]";
 	}
-	
-	
 }
