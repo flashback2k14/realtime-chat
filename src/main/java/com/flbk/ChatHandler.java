@@ -74,17 +74,16 @@ public class ChatHandler {
 		
 		logger.info("Handle changed chat message");
 		String chatId = context.request().getParam("id");
+		String address = "chat." + chatId;
 
 		Message msg = new Message(context.getBodyAsJson().getString("author"),
 															context.getBodyAsJson().getString("content"));
 
 		this.repository.saveMessage(chatId, msg, ar -> {
 			if (ar.succeeded()) {
-				String address = "chat." + chatId;
-				context.vertx().eventBus().publish(address, context.getBodyAsString());
-				context.response().setStatusCode(200).end();
+				context.vertx().eventBus().publish(address, msg.toJson().encodePrettily());
+				context.response().setStatusCode(201).end();
 			} else {
-				String address = "chat." + chatId;
 				context.vertx().eventBus().publish(address, "Sending messages failed");
 				context.response().setStatusCode(500).end(ar.cause().getMessage());
 			}

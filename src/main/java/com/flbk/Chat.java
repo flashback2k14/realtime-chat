@@ -1,6 +1,7 @@
 package com.flbk;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import io.vertx.core.json.JsonArray;
@@ -102,12 +103,19 @@ public class Chat {
 	public void setChatDesc(String chatDesc) {
 		this.chatDesc = chatDesc;
 	}
-
+	
 	@Override
 	public String toString() {
-		return "Chat [id=" + chatId + ", description=" + chatDesc + "]";
+		return "Chat [id=" + id
+		       + ", chatId="
+		       + chatId
+		       + ", chatDesc="
+		       + chatDesc
+		       + ", messages="
+		       + messages
+		       + "]";
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

@@ -11,8 +11,6 @@ window.addEventListener("DOMContentLoaded", function() {
 	var ulChatHistory = document.querySelector("#ulChatHistory");
 	var errorToast = document.querySelector("#errorToast");
 	var btnSend = document.querySelector("#btnSend");
-	var messageContent = document.querySelector("#messageContent");
-	var messageContent = document.querySelector("#messageChatName");
 
 	/**
 	 * Show Toast
@@ -29,9 +27,9 @@ window.addEventListener("DOMContentLoaded", function() {
 	 * @param msg Chat Message
 	 * @returns
 	 */
-	function _createListItem(name, msg) {
+	function _createListItem(name, msg, timestamp) {
 		var wrapper = document.createElement("div");
-		wrapper.classList.add("message-card");
+		wrapper.classList.add("message__card");
 		
 		var header = document.createElement("div");
 		
@@ -40,14 +38,38 @@ window.addEventListener("DOMContentLoaded", function() {
 		heading.innerHTML = "<b><em>" + name + " says:</em></b>";
 		
 		var content = document.createElement("div");
-		content.classList.add("message-card-content");
+		content.classList.add("message__card--content");
 		content.innerHTML = msg;
+		
+		var createdAt = document.createElement("p");
+		createdAt.classList.add("message-created-time", "mdl-typography--text-right");
+		
+		timeStampOpts = {
+				year:"numeric", month:"numeric", day:"numeric",
+				hour:"numeric", minute:"numeric", second: "numeric"
+		}
+		createdAt.innerHTML = new Intl.DateTimeFormat(
+				"en-US",
+				timeStampOpts)
+			.format(new Date().setTime(timestamp));
 		
 		header.appendChild(heading);
 		wrapper.appendChild(header);
+		content.appendChild(createdAt);
 		wrapper.appendChild(content);
 		
 		ulChatHistory.appendChild(wrapper);
+	};
+
+	/**
+	 * Scroll to last Chat Message
+	 * @returns
+	 */
+	function _scrollToBottom() {
+		// get all message cards
+		var items = document.querySelectorAll(".message__card");
+		// scroll into last card
+		items[items.length - 1].scrollIntoView(true);
 	};
 
 	/**
@@ -61,9 +83,10 @@ window.addEventListener("DOMContentLoaded", function() {
 			if (xhr.readyState === 4) {
 				if (xhr.status === 200) {
 					if (JSON.parse(xhr.responseText).chatId.length > 0) {
+						
 						JSON.parse(xhr.responseText).messages
 							.forEach(function(el) {
-								_createListItem(el.author, el.content);
+								_createListItem(el.author, el.content, el.created);
 							});
 					}
 				}
@@ -85,7 +108,11 @@ window.addEventListener("DOMContentLoaded", function() {
 					_showErrorToast("Error: " + error.message);
 					return;
 				}
-				_createListItem(JSON.parse(message.body).author, JSON.parse(message.body).content);
+				var json = JSON.parse(message.body);
+				_createListItem(
+						json.author,
+						json.content,
+						json.created);
 			});
 		}
 	};
@@ -115,10 +142,15 @@ window.addEventListener("DOMContentLoaded", function() {
 				if (!xhr.status === 200) {
 					_showErrorToast("Invalid Chat Message!");
 				} else {
+					// clear input
 					txtChatMessage.value = "";
+					// remove classes to reset the layout
 					fiContainerMessage.classList.remove("is-focused");
 					fiContainerMessage.classList.remove("is-dirty");
+					// set focus to message field
 					txtChatMessage.focus();
+					// scroll to last chat message
+					_scrollToBottom();
 				}
 			}
 		};
