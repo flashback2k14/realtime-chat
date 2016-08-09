@@ -166,9 +166,56 @@ window.addEventListener("DOMContentLoaded", function() {
 				if (json) {
 					if (json.hasOwnProperty("error")) {
 						_showErrorToast(json.error);
-					} else {
-						_createListItem(json.author, json.content, json.created);
-					}	
+						return;
+					} 
+					if (json.hasOwnProperty("type")) {
+						switch (json.type) {
+							case "message":
+								// add new List item to History
+								_createListItem(json.response.author, json.response.content, json.response.created);
+								break;
+							case "chat":
+								// add new List item to combobox
+								_createComboboxItem(json.response.chatId);
+								// reload combobox
+								getmdlSelect.init(".getmdl-select");
+								break;
+							default:
+								break;
+						}
+					}
+				}
+			});
+		}
+		var eb = new EventBus(BASEURL + "/eventbus");
+		eb.onopen = function() {
+			eb.registerHandler("xyz", function(error, message) {
+				if (error) {
+					_showErrorToast("Error: " + error.message);
+					return;
+				}
+				var json = JSON.parse(message.body);
+				if (json) {
+					if (json.hasOwnProperty("error")) {
+						_showErrorToast(json.error);
+						return;
+					} 
+					if (json.hasOwnProperty("type")) {
+						switch (json.type) {
+							case "message":
+								// add new List item to History
+								_createListItem(json.response.author, json.response.content, json.response.created);
+								break;
+							case "chat":
+								// add new List item to combobox
+								_createComboboxItem(json.response.chatId);
+								// reload combobox
+								getmdlSelect.init(".getmdl-select");
+								break;
+							default:
+								break;
+						}
+					}
 				}
 			});
 		}
@@ -178,28 +225,25 @@ window.addEventListener("DOMContentLoaded", function() {
 	 * Register Event Bus to get Chat Ids
 	 * @returns
 	 */
-	function _registerEventbusHandlerIds() {
-		var eventBus = new EventBus(BASEURL + "/eventbus/ids");
-		eventBus.onopen = function() {
-			eventBus.registerHandler("chat-ids", function(error, message) {
-				if (error) {
-					_showErrorToast("Error: " + error.message);
-					return;
-				}
-				var json = JSON.parse(message.body);
-				if (json) {
-					if (json.hasOwnProperty("error")) {
-						_showErrorToast(json.error);
-					} else {
-						// add new List item to combobox
-						_createComboboxItem(json.chatId);
-						// reload combobox
-						getmdlSelect.init(".getmdl-select");
-					}
-				}
-			});
-		}
-	};
+	// function _registerEventbusHandlerIds() {
+	// 	var eventBus = new EventBus(BASEURL + "/eventbus/ids");
+	// 	eventBus.onopen = function() {
+	// 		eventBus.registerHandler("chat-ids", function(error, message) {
+	// 			if (error) {
+	// 				_showErrorToast("Error: " + error.message);
+	// 				return;
+	// 			}
+	// 			var json = JSON.parse(message.body);
+	// 			if (json) {
+	// 				if (json.hasOwnProperty("error")) {
+	// 					_showErrorToast(json.error);
+	// 				} else {
+						
+	// 				}
+	// 			}
+	// 		});
+	// 	}
+	// };
 
 	/**
 	 * Clear List View from Chat Messages
@@ -389,7 +433,7 @@ window.addEventListener("DOMContentLoaded", function() {
 		// get Chat IDs
 		_getChatIds();
 		// register eventbus for new added Chats
-		_registerEventbusHandlerIds();
+		//_registerEventbusHandlerIds();
 		// Eventlisteners
 		cboChatId.addEventListener("change", _chatIdChanged, false);
 		btnAddChatId.addEventListener("click", _showAddChatIdDialog, false);

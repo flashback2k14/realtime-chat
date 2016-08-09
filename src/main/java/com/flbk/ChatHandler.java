@@ -22,7 +22,10 @@ public class ChatHandler {
 		
 		logger.info("Handle request to add a single chat");
 		Chat c = Json.decodeValue(context.getBodyAsString(), Chat.class);
-		String address = "chat-ids";
+		//String address = "chat-ids";
+		// String chatId = context.request().getParam("id");
+		// String address = "chat." + chatId;
+		String address = "xyz";
 
 		this.repository.getAllChats(ar -> {
 			if (ar.succeeded()) {
@@ -35,10 +38,12 @@ public class ChatHandler {
 				} else {
 					this.repository.saveChat(c, ar1 -> {
 						if (ar1.succeeded()) {
-							context.vertx().eventBus().publish(address, ar1.result().toJson().encodePrettily());
+							context.vertx().eventBus()
+								.publish(address, createResponseObject(0, ar1.result().toJson()));
 							context.response().setStatusCode(201).end();
 						} else {
-							context.vertx().eventBus().publish(address, "Addition failed: Respond with 500 INTERNAL SERVER ERROR");
+							context.vertx().eventBus()
+								.publish(address, createErrorObject("Addition failed: Respond with 500 INTERNAL SERVER ERROR"));
 							context.response()
 								.putHeader("content-type", "application/json")
 								.setStatusCode(500)
@@ -61,14 +66,17 @@ public class ChatHandler {
 		this.repository.getChatById(chatId, ar -> {
 			if (ar.succeeded()) {
 				if (Objects.nonNull(ar.result())) {
-					context.response().putHeader("content-type", "application/json").setStatusCode(200)
+					context.response().putHeader("content-type", "application/json")
+							.setStatusCode(200)
 							.end(ar.result().toJson().encodePrettily());
 				} else {
-					context.response().putHeader("content-type", "application/json").setStatusCode(404)
+					context.response().putHeader("content-type", "application/json")
+							.setStatusCode(404)
 							.end(ar.cause().getMessage());
 				}
 			} else {
-				context.response().putHeader("content-type", "application/json").setStatusCode(500)
+				context.response().putHeader("content-type", "application/json")
+						.setStatusCode(500)
 						.end(ar.cause().getMessage());
 			}
 		});
@@ -85,7 +93,7 @@ public class ChatHandler {
 
 		this.repository.saveMessage(chatId, msg, ar -> {
 			if (ar.succeeded()) {
-				context.vertx().eventBus().publish(address, msg.toJson().encodePrettily());
+				context.vertx().eventBus().publish(address, createResponseObject(1, msg.toJson()));
 				context.response().setStatusCode(201).end();
 			} else {
 				context.vertx().eventBus().publish(address, "Sending messages failed");
@@ -114,5 +122,22 @@ public class ChatHandler {
 
 	private String createErrorObject(String msg) {
 		return new JsonObject().put("error", msg).encodePrettily();
+	}
+
+	private String createResponseObject(int type, JsonObject obj) {
+		switch (type) {
+			case 0:
+				return new JsonObject()
+									.put("type", "chat")
+									.put("response", obj)
+									.encodePrettily();
+			case 1:
+				return new JsonObject()
+									.put("type", "message")
+									.put("response", obj)
+									.encodePrettily();
+			default:
+				return "Invalid Type!";
+		}
 	}
 }
