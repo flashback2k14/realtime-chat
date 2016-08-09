@@ -37,6 +37,8 @@ window.addEventListener("DOMContentLoaded", function() {
 	var btnDialogSave = document.querySelector("#btnDialogSave");
 	var btnDialogCancel = document.querySelector("#btnDialogCancel");
 
+	var eventBus;
+	
 	/**
 	 * Show Toast
 	 * @param msg Error Message
@@ -155,7 +157,8 @@ window.addEventListener("DOMContentLoaded", function() {
 	 * @returns
 	 */
 	function _registerEventbusHandlerMessages() {
-		var eventBus = new EventBus(BASEURL + "/eventbus");
+		 eventBus = new EventBus(BASEURL + "/eventbus");
+		
 		eventBus.onopen = function() {
 			eventBus.registerHandler("chat." + cboChatId.value, function(error, message) {
 				if (error) {
@@ -173,6 +176,7 @@ window.addEventListener("DOMContentLoaded", function() {
 							case "message":
 								// add new List item to History
 								_createListItem(json.response.author, json.response.content, json.response.created);
+								eventBus.close();
 								break;
 							case "chat":
 								// add new List item to combobox
@@ -279,6 +283,9 @@ window.addEventListener("DOMContentLoaded", function() {
 	function _chatIdChanged() {
 		_clearListView();
 		_loadChat();
+		if(eventBus !== undefined && eventBus !== null){
+			eventBus.close();
+		}
 		_registerEventbusHandlerMessages();
 	};
 
