@@ -25,7 +25,8 @@ public class ChatServiceVerticle extends AbstractVerticle {
 		Router router = Router.router(vertx);
 		
 		// handle events
-		router.route("/eventbus/*").handler(eventBusHandler());
+		router.route("/eventbus/messages/*").handler(eventBusHandlerMessages());
+		router.route("/eventbus/chats/*").handler(eventBusHandlerChats());
 		// handle api
 		router.mountSubRouter("/api", chatApiRouter());
 		// handle errors
@@ -48,10 +49,7 @@ public class ChatServiceVerticle extends AbstractVerticle {
 			});
 	}
 
-	private SockJSHandler eventBusHandler() {
-		
-		logger.info("Configure eventbus bridge");
-		
+	private SockJSHandler eventBusHandlerMessages() {
 		BridgeOptions options = new BridgeOptions()
 				.addOutboundPermitted(new PermittedOptions().setAddressRegex("chat\\.[a-zA-Z0-9]+"));
 		
@@ -62,15 +60,29 @@ public class ChatServiceVerticle extends AbstractVerticle {
 			if (event.type() == BridgeEventType.SOCKET_CLOSED) {
 				logger.info("A chat socket was closed!");
 			}
-			
 			event.complete(true);
 		});
 	}
 	
+	 private SockJSHandler eventBusHandlerChats() {
+	 	BridgeOptions options = new BridgeOptions()
+				.addOutboundPermitted(new PermittedOptions().setAddress("cids"));
+
+		return SockJSHandler.create(vertx).bridge(options, event -> {
+			if (event.type() == BridgeEventType.SOCKET_CREATED) {
+				logger.info("A client was created to listening for new created Chat IDs!");
+			}
+			if (event.type() == BridgeEventType.SOCKET_CLOSED) {
+				logger.info("A client was closed to listening for new created Chat IDs!");
+			}
+			event.complete(true);
+		});
+	}
+
 	private Router chatApiRouter() {
 		JsonObject dbConf = new JsonObject()
-    			.put("db_name", System.getProperty("dbname"))
-    			.put("connection_string", System.getProperty("dburl"));
+					.put("db_name", System.getProperty("dbname"))
+					.put("connection_string", System.getProperty("dburl"));
 		
 		ChatRepository repository = new ChatRepository(vertx, dbConf);
 		ChatHandler chatHandler = new ChatHandler(repository);
@@ -83,8 +95,8 @@ public class ChatServiceVerticle extends AbstractVerticle {
 		router.route().consumes("application/json");
 		router.route().produces("application/json");
 		
-		router.get("/chats/:id").handler(chatHandler::handleGetChat); // implemented into Frontend
-		router.post("/chats/:id/messages").handler(chatHandler::handleChangedChatMessage); // implemented into Frontend
+		router.get("/chats/:id").handler(chatHandler::handleGetChat);
+		router.post("/chats/:id/messages").handler(chatHandler::handleChangedChatMessage);
 		router.post("/chats").handler(chatHandler::handleAddChat);
 		router.get("/chats").handler(chatHandler::handleGetAllChats);
 		
