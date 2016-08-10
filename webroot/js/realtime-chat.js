@@ -157,43 +157,13 @@ window.addEventListener("DOMContentLoaded", function() {
 	 * @returns
 	 */
 	function _registerEventbusHandlerMessages() {
-		 eventBus = new EventBus(BASEURL + "/eventbus");
+		if(eventBus !== undefined && eventBus !== null){
+			eventBus.close();
+		}
+		eventBus = new EventBus(BASEURL + "/eventbus/messages");
 		
 		eventBus.onopen = function() {
 			eventBus.registerHandler("chat." + cboChatId.value, function(error, message) {
-				if (error) {
-					_showErrorToast("Error: " + error.message);
-					return;
-				}
-				var json = JSON.parse(message.body);
-				if (json) {
-					if (json.hasOwnProperty("error")) {
-						_showErrorToast(json.error);
-						return;
-					} 
-					if (json.hasOwnProperty("type")) {
-						switch (json.type) {
-							case "message":
-								// add new List item to History
-								_createListItem(json.response.author, json.response.content, json.response.created);
-								eventBus.close();
-								break;
-							case "chat":
-								// add new List item to combobox
-								_createComboboxItem(json.response.chatId);
-								// reload combobox
-								getmdlSelect.init(".getmdl-select");
-								break;
-							default:
-								break;
-						}
-					}
-				}
-			});
-		}
-		var eb = new EventBus(BASEURL + "/eventbus");
-		eb.onopen = function() {
-			eb.registerHandler("xyz", function(error, message) {
 				if (error) {
 					_showErrorToast("Error: " + error.message);
 					return;
@@ -229,25 +199,40 @@ window.addEventListener("DOMContentLoaded", function() {
 	 * Register Event Bus to get Chat Ids
 	 * @returns
 	 */
-	// function _registerEventbusHandlerIds() {
-	// 	var eventBus = new EventBus(BASEURL + "/eventbus/ids");
-	// 	eventBus.onopen = function() {
-	// 		eventBus.registerHandler("chat-ids", function(error, message) {
-	// 			if (error) {
-	// 				_showErrorToast("Error: " + error.message);
-	// 				return;
-	// 			}
-	// 			var json = JSON.parse(message.body);
-	// 			if (json) {
-	// 				if (json.hasOwnProperty("error")) {
-	// 					_showErrorToast(json.error);
-	// 				} else {
-						
-	// 				}
-	// 			}
-	// 		});
-	// 	}
-	// };
+	 function _registerEventbusHandlerIds() {
+		 var eb = new EventBus(BASEURL + "/eventbus/chats");
+			eb.onopen = function() {
+				eb.registerHandler("cids", function(error, message) {
+					if (error) {
+						_showErrorToast("Error: " + error.message);
+						return;
+					}
+					var json = JSON.parse(message.body);
+					if (json) {
+						if (json.hasOwnProperty("error")) {
+							_showErrorToast(json.error);
+							return;
+						} 
+						if (json.hasOwnProperty("type")) {
+							switch (json.type) {
+								case "message":
+									// add new List item to History
+									_createListItem(json.response.author, json.response.content, json.response.created);
+									break;
+								case "chat":
+									// add new List item to combobox
+									_createComboboxItem(json.response.chatId);
+									// reload combobox
+									getmdlSelect.init(".getmdl-select");
+									break;
+								default:
+									break;
+							}
+						}
+					}
+				});
+			}
+	 };
 
 	/**
 	 * Clear List View from Chat Messages
@@ -283,9 +268,6 @@ window.addEventListener("DOMContentLoaded", function() {
 	function _chatIdChanged() {
 		_clearListView();
 		_loadChat();
-		if(eventBus !== undefined && eventBus !== null){
-			eventBus.close();
-		}
 		_registerEventbusHandlerMessages();
 	};
 
@@ -439,8 +421,8 @@ window.addEventListener("DOMContentLoaded", function() {
 		}
 		// get Chat IDs
 		_getChatIds();
-		// register eventbus for new added Chats
-		//_registerEventbusHandlerIds();
+//		register eventbus for new added Chats
+		_registerEventbusHandlerIds();
 		// Eventlisteners
 		cboChatId.addEventListener("change", _chatIdChanged, false);
 		btnAddChatId.addEventListener("click", _showAddChatIdDialog, false);

@@ -25,7 +25,7 @@ public class ChatHandler {
 		//String address = "chat-ids";
 		// String chatId = context.request().getParam("id");
 		// String address = "chat." + chatId;
-		String address = "xyz";
+		String address = "cids";
 
 		this.repository.getAllChats(ar -> {
 			if (ar.succeeded()) {
@@ -38,8 +38,8 @@ public class ChatHandler {
 				} else {
 					this.repository.saveChat(c, ar1 -> {
 						if (ar1.succeeded()) {
-//							context.vertx().eventBus()
-//								.publish(address, createResponseObject(0, ar1.result().toJson()));
+							context.vertx().eventBus()
+								.publish(address, createResponseObject(0, ar1.result().toJson()));
 							context.response().setStatusCode(201).end();
 						} else {
 							context.vertx().eventBus()

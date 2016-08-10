@@ -25,7 +25,8 @@ public class ChatServiceVerticle extends AbstractVerticle {
 		Router router = Router.router(vertx);
 		
 		// handle events
-		router.route("/eventbus/*").handler(eventBusHandlerMessages());
+		router.route("/eventbus/messages/*").handler(eventBusHandlerMessages());
+		router.route("/eventbus/chats/*").handler(eventBusHandlerChats());
 		//router.route("/eventbus/ids/*").handler(eventBusHandlerIds());
 		// handle api
 		router.mountSubRouter("/api", chatApiRouter());
@@ -51,7 +52,6 @@ public class ChatServiceVerticle extends AbstractVerticle {
 
 	private SockJSHandler eventBusHandlerMessages() {
 		BridgeOptions options = new BridgeOptions()
-				.addOutboundPermitted(new PermittedOptions().setAddress("xyz"))
 				.addOutboundPermitted(new PermittedOptions().setAddressRegex("chat\\.[a-zA-Z0-9]+"));
 		
 		return SockJSHandler.create(vertx).bridge(options, event -> {
@@ -66,21 +66,21 @@ public class ChatServiceVerticle extends AbstractVerticle {
 		});
 	}
 	
-	// private SockJSHandler eventBusHandlerIds() {
-	// 	BridgeOptions options = new BridgeOptions()
-	// 			.addOutboundPermitted(new PermittedOptions().setAddress("chat-ids"));
+	 private SockJSHandler eventBusHandlerChats() {
+	 	BridgeOptions options = new BridgeOptions()
+	 			.addOutboundPermitted(new PermittedOptions().setAddress("cids"));
 
-	// 	return SockJSHandler.create(vertx).bridge(options, event -> {
-	// 		if (event.type() == BridgeEventType.SOCKET_CREATED) {
-	// 			logger.info("A client was created to listening for new created Chat IDs!");
-	// 		}
-	// 		if (event.type() == BridgeEventType.SOCKET_CLOSED) {
-	// 			logger.info("A client was closed to listening for new created Chat IDs!");
-	// 		}
+	 	return SockJSHandler.create(vertx).bridge(options, event -> {
+	 		if (event.type() == BridgeEventType.SOCKET_CREATED) {
+	 			logger.info("A client was created to listening for new created Chat IDs!");
+	 		}
+	 		if (event.type() == BridgeEventType.SOCKET_CLOSED) {
+	 			logger.info("A client was closed to listening for new created Chat IDs!");
+	 		}
 			
-	// 		event.complete(true);
-	// 	});
-	// }
+	 		event.complete(true);
+	 	});
+	 }
 
 	private Router chatApiRouter() {
 		JsonObject dbConf = new JsonObject()
