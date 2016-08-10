@@ -71,7 +71,7 @@ window.addEventListener("DOMContentLoaded", function() {
 		var createdAt = document.createElement("p");
 		createdAt.classList.add("message__card--created", "mdl-typography--text-right");
 		// convert timestamp into readable time
-		timeStampOpts = {
+		var timeStampOpts = {
 				year:"numeric", month:"numeric", day:"numeric",
 				hour:"numeric", minute:"numeric", second: "numeric"
 		}
@@ -157,11 +157,13 @@ window.addEventListener("DOMContentLoaded", function() {
 	 * @returns
 	 */
 	function _registerEventbusHandlerMessages() {
-		if(eventBus !== undefined && eventBus !== null){
+		// close eventbus if defined or not null
+		if (eventBus !== undefined && eventBus !== null) {
 			eventBus.close();
 		}
+		// create new eventbus instance
 		eventBus = new EventBus(BASEURL + "/eventbus/messages");
-		
+		// open eventbus for registration
 		eventBus.onopen = function() {
 			eventBus.registerHandler("chat." + cboChatId.value, function(error, message) {
 				if (error) {
@@ -174,22 +176,8 @@ window.addEventListener("DOMContentLoaded", function() {
 						_showErrorToast(json.error);
 						return;
 					} 
-					if (json.hasOwnProperty("type")) {
-						switch (json.type) {
-							case "message":
-								// add new List item to History
-								_createListItem(json.response.author, json.response.content, json.response.created);
-								break;
-							case "chat":
-								// add new List item to combobox
-								_createComboboxItem(json.response.chatId);
-								// reload combobox
-								getmdlSelect.init(".getmdl-select");
-								break;
-							default:
-								break;
-						}
-					}
+					// add new List item to History
+					_createListItem(json.author, json.content, json.created);
 				}
 			});
 		}
@@ -199,40 +187,30 @@ window.addEventListener("DOMContentLoaded", function() {
 	 * Register Event Bus to get Chat Ids
 	 * @returns
 	 */
-	 function _registerEventbusHandlerIds() {
-		 var eb = new EventBus(BASEURL + "/eventbus/chats");
-			eb.onopen = function() {
-				eb.registerHandler("cids", function(error, message) {
-					if (error) {
-						_showErrorToast("Error: " + error.message);
+	function _registerEventbusHandlerChats() {
+		var eb = new EventBus(BASEURL + "/eventbus/chats");
+		eb.onopen = function() {
+			eb.registerHandler("cids", function(error, message) {
+				if (error) {
+					_showErrorToast("Error: " + error.message);
+					return;
+				}
+				var json = JSON.parse(message.body);
+				if (json) {
+					if (json.hasOwnProperty("error")) {
+						_showErrorToast(json.error);
 						return;
 					}
-					var json = JSON.parse(message.body);
-					if (json) {
-						if (json.hasOwnProperty("error")) {
-							_showErrorToast(json.error);
-							return;
-						} 
-						if (json.hasOwnProperty("type")) {
-							switch (json.type) {
-								case "message":
-									// add new List item to History
-									_createListItem(json.response.author, json.response.content, json.response.created);
-									break;
-								case "chat":
-									// add new List item to combobox
-									_createComboboxItem(json.response.chatId);
-									// reload combobox
-									getmdlSelect.init(".getmdl-select");
-									break;
-								default:
-									break;
-							}
-						}
-					}
-				});
-			}
-	 };
+					// add new List item to combobox
+					_createComboboxItem(json.chatId);
+					// reload combobox
+					getmdlSelect.init(".getmdl-select");
+					// show user notification
+					_showErrorToast("New Chat was added!");
+				}
+			});
+		}
+	};
 
 	/**
 	 * Clear List View from Chat Messages
@@ -390,8 +368,6 @@ window.addEventListener("DOMContentLoaded", function() {
 		// send request to server
 		_dataRequester("/api/chats", body)
 			.then(function(response) {
-				// show user notification
-				_showErrorToast("New Chat was added!");
 				// clear Dialog inputs
 				_clearDialogInputs();
 				// close Dialog
@@ -421,8 +397,8 @@ window.addEventListener("DOMContentLoaded", function() {
 		}
 		// get Chat IDs
 		_getChatIds();
-//		register eventbus for new added Chats
-		_registerEventbusHandlerIds();
+		// register eventbus for new added Chats
+		_registerEventbusHandlerChats();
 		// Eventlisteners
 		cboChatId.addEventListener("change", _chatIdChanged, false);
 		btnAddChatId.addEventListener("click", _showAddChatIdDialog, false);

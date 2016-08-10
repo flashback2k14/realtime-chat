@@ -22,9 +22,6 @@ public class ChatHandler {
 		
 		logger.info("Handle request to add a single chat");
 		Chat c = Json.decodeValue(context.getBodyAsString(), Chat.class);
-		//String address = "chat-ids";
-		// String chatId = context.request().getParam("id");
-		// String address = "chat." + chatId;
 		String address = "cids";
 
 		this.repository.getAllChats(ar -> {
@@ -39,7 +36,7 @@ public class ChatHandler {
 					this.repository.saveChat(c, ar1 -> {
 						if (ar1.succeeded()) {
 							context.vertx().eventBus()
-								.publish(address, createResponseObject(0, ar1.result().toJson()));
+								.publish(address, ar1.result().toJson().encodePrettily());
 							context.response().setStatusCode(201).end();
 						} else {
 							context.vertx().eventBus()
@@ -53,7 +50,9 @@ public class ChatHandler {
 				}
 			} else {
 				context.vertx().eventBus().publish(address, "Chat Id already exists!");
-				context.response().setStatusCode(500).end();
+				context.response().putHeader("content-type", "application/json")
+						.setStatusCode(500)
+						.end(createErrorObject("Chat Id already exists!"));
 			}
 		});
 	}
@@ -72,12 +71,12 @@ public class ChatHandler {
 				} else {
 					context.response().putHeader("content-type", "application/json")
 							.setStatusCode(404)
-							.end(ar.cause().getMessage());
+							.end(createErrorObject(ar.cause().getMessage()));
 				}
 			} else {
 				context.response().putHeader("content-type", "application/json")
 						.setStatusCode(500)
-						.end(ar.cause().getMessage());
+						.end(createErrorObject(ar.cause().getMessage()));
 			}
 		});
 	}
@@ -93,7 +92,7 @@ public class ChatHandler {
 
 		this.repository.saveMessage(chatId, msg, ar -> {
 			if (ar.succeeded()) {
-				context.vertx().eventBus().publish(address, createResponseObject(1, msg.toJson()));
+				context.vertx().eventBus().publish(address, msg.toJson().encodePrettily());
 				context.response().setStatusCode(201).end();
 			} else {
 				context.vertx().eventBus().publish(address, "Sending messages failed");
@@ -111,33 +110,18 @@ public class ChatHandler {
 		
 		this.repository.getAllChats(ar -> {
 			if (ar.succeeded()) {
-				context.response().putHeader("content-type", "application/json").setStatusCode(200)
+				context.response().putHeader("content-type", "application/json")
+						.setStatusCode(200)
 						.end(Json.encodePrettily(ar.result()));
 			} else {
-				context.response().putHeader("content-type", "application/json").setStatusCode(500)
-						.end(ar.cause().getMessage());
+				context.response().putHeader("content-type", "application/json")
+						.setStatusCode(500)
+						.end(createErrorObject(ar.cause().getMessage()));
 			}
 		});
 	}
 
 	private String createErrorObject(String msg) {
 		return new JsonObject().put("error", msg).encodePrettily();
-	}
-
-	private String createResponseObject(int type, JsonObject obj) {
-		switch (type) {
-			case 0:
-				return new JsonObject()
-									.put("type", "chat")
-									.put("response", obj)
-									.encodePrettily();
-			case 1:
-				return new JsonObject()
-									.put("type", "message")
-									.put("response", obj)
-									.encodePrettily();
-			default:
-				return "Invalid Type!";
-		}
 	}
 }

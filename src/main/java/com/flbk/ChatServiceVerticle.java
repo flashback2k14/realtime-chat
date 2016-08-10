@@ -27,7 +27,6 @@ public class ChatServiceVerticle extends AbstractVerticle {
 		// handle events
 		router.route("/eventbus/messages/*").handler(eventBusHandlerMessages());
 		router.route("/eventbus/chats/*").handler(eventBusHandlerChats());
-		//router.route("/eventbus/ids/*").handler(eventBusHandlerIds());
 		// handle api
 		router.mountSubRouter("/api", chatApiRouter());
 		// handle errors
@@ -61,31 +60,29 @@ public class ChatServiceVerticle extends AbstractVerticle {
 			if (event.type() == BridgeEventType.SOCKET_CLOSED) {
 				logger.info("A chat socket was closed!");
 			}
-
 			event.complete(true);
 		});
 	}
 	
 	 private SockJSHandler eventBusHandlerChats() {
 	 	BridgeOptions options = new BridgeOptions()
-	 			.addOutboundPermitted(new PermittedOptions().setAddress("cids"));
+				.addOutboundPermitted(new PermittedOptions().setAddress("cids"));
 
-	 	return SockJSHandler.create(vertx).bridge(options, event -> {
-	 		if (event.type() == BridgeEventType.SOCKET_CREATED) {
-	 			logger.info("A client was created to listening for new created Chat IDs!");
-	 		}
-	 		if (event.type() == BridgeEventType.SOCKET_CLOSED) {
-	 			logger.info("A client was closed to listening for new created Chat IDs!");
-	 		}
-			
-	 		event.complete(true);
-	 	});
-	 }
+		return SockJSHandler.create(vertx).bridge(options, event -> {
+			if (event.type() == BridgeEventType.SOCKET_CREATED) {
+				logger.info("A client was created to listening for new created Chat IDs!");
+			}
+			if (event.type() == BridgeEventType.SOCKET_CLOSED) {
+				logger.info("A client was closed to listening for new created Chat IDs!");
+			}
+			event.complete(true);
+		});
+	}
 
 	private Router chatApiRouter() {
 		JsonObject dbConf = new JsonObject()
-    			.put("db_name", System.getProperty("dbname"))
-    			.put("connection_string", System.getProperty("dburl"));
+					.put("db_name", System.getProperty("dbname"))
+					.put("connection_string", System.getProperty("dburl"));
 		
 		ChatRepository repository = new ChatRepository(vertx, dbConf);
 		ChatHandler chatHandler = new ChatHandler(repository);
