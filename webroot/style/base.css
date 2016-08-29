@@ -6,13 +6,15 @@ body {
 }
 
 .header--image {
-	height: 150px;
-  background: url('../images/header-image.jpg') center / cover;
+	min-height: 100px;
+	height: 100px;
+	max-height: 100px;
+  background: url('../images/header-image-2.jpg') center / cover;
 	color: white;
 }
 
-.title--left {
-	padding-left: 36px;
+.title--top {
+	padding-top: 36px;
 }
 
 .content--format {
@@ -21,7 +23,7 @@ body {
 
 .left__site--fixed {
 	position: fixed;
-	top: 85px;
+	top: 115px;
 }
 
 .right__site--margin {

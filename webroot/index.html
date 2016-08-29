@@ -13,11 +13,12 @@
   <body>
     <div class="mdl-layout mdl-js-layout">
       <!-- Header -->
-      <!-- <header class="mdl-layout__header--transparent header--image"> -->
-      <header class="mdl-layout__header">
-        <div class="mdl-layout__header-row title--left">
-          <span class="mdl-typography--headline">Realtime Chat built with Vert.X and SockJS</span>
+      <header class="mdl-layout__header--transparent header--image"> 
+        <div class="mdl-layout__header-row title--top">
           <div class="mdl-layout-spacer"></div>
+          <span class="mdl-typography--display-2">
+            Realtime Chat
+          </span>
         </div>
       </header>
       <!-- Content -->
@@ -100,8 +101,8 @@
 			      </li>
 			    </ul>
 			  </div>
-			</footer>
-			
+      </footer>
+
       <!-- Dialog -->
       <dialog class="mdl-dialog" id="addDialog">
         <div class="mdl-dialog__title">
@@ -129,7 +130,7 @@
         </div>
       </dialog>
 
-			<!-- Errors -->
+      <!-- Errors -->
       <div id="errorToast" class="mdl-js-snackbar mdl-snackbar">
         <div class="mdl-snackbar__text"></div>
         <button class="mdl-snackbar__action" type="button"></button>
@@ -144,4 +145,4 @@
     <script src="./js/libs/vertx-eventbus.js"></script>
     <script src="./js/realtime-chat.js"></script>
   </body>
-</html> 
+</html>
