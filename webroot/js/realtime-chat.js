@@ -109,6 +109,7 @@ window.addEventListener("DOMContentLoaded", function() {
 			var xhr = new XMLHttpRequest();
 			// init listener
 			xhr.onreadystatechange = function() {
+				// 4 == DONE --> operation is complete
 				if (xhr.readyState === 4) {
 					// check xhr status
 					if (xhr.status === 200 || xhr.status === 201) {
